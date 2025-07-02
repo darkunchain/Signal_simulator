@@ -1,6 +1,10 @@
-import * as signal from '@privacyresearch/libsignal-protocol';
+import * as signal from 'libsignal-protocol';
 
-type Store = signal.SignalProtocolStore;
+type Store = {
+  get: (key: string) => unknown;
+  put: (key: string, value: unknown) => void;
+  remove: (key: string) => void;
+};
 
 function createSignalStore(): Store {
   const obj: Record<string, unknown> = {};

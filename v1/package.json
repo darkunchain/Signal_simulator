@@ -11,7 +11,7 @@
   "dependencies": {
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
-    "@privacyresearch/libsignal-protocol": "^2.5.2",
+    "libsignal-protocol": "github:signalapp/libsignal-protocol-javascript",
     "reactflow": "^11.7.0"
   },
   "devDependencies": {

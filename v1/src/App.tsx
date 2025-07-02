@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import FlowSimulator from './components/FlowSimulator';
+import SignalStepByStep from './components/SignalStepByStep';
 import './styles.css';
 
 export default function App() {
@@ -13,3 +14,5 @@ export default function App() {
     </div>
   );
 }
+
+<SignalStepByStep />

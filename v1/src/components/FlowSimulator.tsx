@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ReactFlow, { Background, Controls, Edge, Node } from 'reactflow';
+import ReactFlow, { Background, Controls, Edge, Node, BackgroundVariant } from 'reactflow';
 import 'reactflow/dist/style.css';
 
 const randomHex = (bytes: number) => {
@@ -42,7 +42,7 @@ export default function FlowSimulator() {
   return (
     <div style={{ width: '100%', height: 520 }}>
       <ReactFlow nodes={nodes} edges={edges} fitView>
-        <Background variant="dots" gap={16} size={1} />
+        <Background variant={BackgroundVariant.Dots} gap={16} size={1} />
         <Controls position="bottom-right" showInteractive={false} />
       </ReactFlow>
       <div style={{ marginTop: '1rem', fontFamily: 'monospace', fontSize: '0.9rem', background:'#f9f9fb', padding:'0.75rem', borderRadius:'8px' }}>
