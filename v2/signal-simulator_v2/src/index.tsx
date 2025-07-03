@@ -1,8 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
+//import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+
+// 👉  Estilos globales de React Flow
+import 'reactflow/dist/style.css';
+
+// (opcional) transición suave al mover nodos
+import './react-flow-anim.css';
+
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
