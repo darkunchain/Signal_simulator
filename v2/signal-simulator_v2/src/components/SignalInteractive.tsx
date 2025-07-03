@@ -12,11 +12,12 @@ import {
   MailOpen as MailOpenIcon,
 } from "lucide-react";
 import "reactflow/dist/style.css";
-import { AliceNode, BobNode } from './CustomNodes';
+import { AliceNode, BobNode, ServerNode } from './CustomNodes';
 
 const nodeTypes = {
   alice: AliceNode,
   bob: BobNode,
+  server: ServerNode,
 };
 
 
@@ -66,15 +67,21 @@ const steps: StepSpec[] = [
     makeNodes: () => [
       {
         id: "alice",
-        position: { x: 0, y: 50 },
+        position: { x: 0, y: 150 },
         data: { label: "Alice" },
         type: "alice",
       },
       {
         id: "bob",
-        position: { x: 420, y: 50 },
+        position: { x: 420, y: 150 },
         data: { label: "Bob" },
         type: "bob",
+      },
+      {
+        id: "server",
+        position: { x: 210, y: 0 },
+        data: { label: "Server" },
+        type: "server",
       },
     ],
     makeKeys: (prev) => ({
