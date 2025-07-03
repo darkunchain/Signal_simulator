@@ -20,9 +20,6 @@ const nodes: Node[] = [
 const timeline: Edge[] = [
   { id: 'e1', source: 'alice', target: 'server', label: 'Publish pre-keys', animated: true },
   { id: 'e2', source: 'server', target: 'bob', label: 'Download pre-keys', animated: true },
-  { id: 'e3', source: 'bob', target: 'alice', label: `X3DH → RootKey\nSalt: ${saltHex.slice(0,8)}…`, animated: true },
-  { id: 'e4', source: 'alice', target: 'bob', label: `Msg #1\nNonce: ${nonces[0].slice(0,8)}…`, animated: true },
-  { id: 'e5', source: 'bob', target: 'alice', label: `Msg #2\nNonce: ${nonces[1].slice(0,8)}…`, animated: true },
 ];
 
 export default function FlowSimulator() {
@@ -45,11 +42,6 @@ export default function FlowSimulator() {
         <Background variant={BackgroundVariant.Dots} gap={16} size={1} />
         <Controls position="bottom-right" showInteractive={false} />
       </ReactFlow>
-      <div style={{ marginTop: '1rem', fontFamily: 'monospace', fontSize: '0.9rem', background:'#f9f9fb', padding:'0.75rem', borderRadius:'8px' }}>
-        <div><strong>Salt (HKDF):</strong> {saltHex}</div>
-        <div><strong>Nonce #1:</strong> {nonces[0]}</div>
-        <div><strong>Nonce #2:</strong> {nonces[1]}</div>
-      </div>
     </div>
   );
 }

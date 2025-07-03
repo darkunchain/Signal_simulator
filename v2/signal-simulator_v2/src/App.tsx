@@ -6,8 +6,8 @@ function App() {
   return (
     <div>
       <h1>Signal Protocol Simulator</h1>
-      <SignalStepByStep />
       <FlowSimulator />
+      <SignalStepByStep />
     </div>
   );
 }
