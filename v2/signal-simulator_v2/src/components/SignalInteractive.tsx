@@ -6,13 +6,17 @@ import ReactFlow, {
   Node,
 } from "reactflow";
 import {
-  Key as KeyIcon,
+  KeyRound as KeyIcon,
   Mail as MailIcon,
   Lock as LockIcon,
   MailOpen as MailOpenIcon,
 } from "lucide-react";
 import "reactflow/dist/style.css";
 import { AliceNode, BobNode, ServerNode } from './CustomNodes';
+import { Paso0Doc, Paso1Doc} from './Documentacion';
+
+
+
 
 const nodeTypes = {
   alice: AliceNode,
@@ -60,6 +64,96 @@ const initialKeys: Record<string, string> = {
 // Definición de pasos
 // ------------------------------------
 const steps: StepSpec[] = [
+  /** Paso Inicial Se quiere enviar un mensaje */
+  {
+    description:
+      "📌 Paso Inicial: Alice desea enviar  un mensaje a Bob",
+    makeNodes: () => [
+      {
+        id: "alice",
+        position: { x: 0, y: 150 },
+        type: "alice",
+        data: { 
+          label: "Alice",
+          tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>              
+                <span style={{ color: "tomato" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Identity key de Alice IK_A
+                <br></br>
+                <span style={{ color: "tomato" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Signed PreKey de Alice SPK_A             
+            </ul>
+          ) 
+        },        
+      },
+      {
+        id: "bob",
+        position: { x: 420, y: 150 },
+        type: "bob",
+        data: { 
+          label: "Bob",
+          tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>              
+                <span style={{ color: "violet" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Identity key de Bob IK_B
+                <br></br>
+                <span style={{ color: "violet" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Signed PreKey de Bob SPK_B             
+            </ul>
+          ) 
+        },        
+        
+      },
+      {
+        id: "server",
+        position: { x: 210, y: 0 },
+        type: "server",
+        data: {
+          label: "WhatsApp Server",
+          tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
+                <span style={{ color: "green" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Identity key de Alice IK_A
+                <br></br>
+                <span style={{ color: "green" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Signed PreKey de Alice SPK_A
+                <br></br>
+                <span style={{ color: "yellow" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Identity key de Bob IK_B
+                <br></br>
+                <span style={{ color: "yellow" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Signed PreKey de Bob SPK_B             
+            </ul>
+          )
+        },
+        
+        
+      },
+    ],
+    makeKeys: (prev) => ({
+      ...prev,
+      RK0: hkdf(prev.IK_A + prev.SPK_B + prev.IK_B, "RK0"),
+      CKs0: hkdf(prev.IK_A, "CKs0"),
+      CKr0: hkdf(prev.IK_B, "CKr0"),
+    }),
+
+  },
   /** Paso 0: tras X3DH */
   {
     description:
@@ -68,19 +162,29 @@ const steps: StepSpec[] = [
       {
         id: "alice",
         position: { x: 0, y: 150 },
-        data: { label: "Alice" },
         type: "alice",
+        data: { 
+          label: "Alice",
+          tooltipContent: (
+            <ul style={{ paddingLeft: 20, margin: 0 }}>
+              <li>🔒 Cifrado activo</li>
+              <li>💬 Puede enviar mensajes</li>
+              <li>🌐 Estado: Conectada</li>
+            </ul>
+          ) 
+        },        
       },
       {
         id: "bob",
         position: { x: 420, y: 150 },
-        data: { label: "Bob" },
+        data: { label: "Bob" },        
         type: "bob",
       },
       {
         id: "server",
         position: { x: 210, y: 0 },
-        data: { label: "Server" },
+        data: { label: "WhatsApp Server" },
+        tooltip: 'Este es el server',
         type: "server",
       },
     ],
@@ -218,12 +322,37 @@ export default function SignalInteractive() {
       </div>
 
       {/* Panel */}
-      <div className="border rounded-2xl shadow p-4 overflow-y-auto">
-        <p className="mb-4 font-medium leading-relaxed whitespace-pre-wrap">
-          {steps[stepIdx].description}
-        </p>
-        <ul className="space-y-1 list-none pb-12">{keyList}</ul>
+      <div
+        style={{
+          display: "flex",
+          gap: "32px",          
+          padding: "16px",
+          background: "#fff",
+          margin: "16px 0",
+          maxWidth: "100%",
+          minHeight: "180px"
+        }}>
+
+
+          <div style={{ flex: 1 }} className="border rounded-2xl shadow p-4 overflow-y-auto">
+            <p className="mb-4 font-medium leading-relaxed whitespace-pre-wrap">
+              {steps[stepIdx].description}
+            </p>
+            <ul className="space-y-1 list-none pb-12">{keyList}</ul>
+          </div>
+
+          <div 
+            style={{ flex: 1,
+            border: "2px solid orange",
+            borderRadius: "8px", }}>
+            <Paso1Doc />
+          </div>
+
       </div>
+      
+
+
+
     </div>
   );
 }
