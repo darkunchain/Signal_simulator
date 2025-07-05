@@ -35,10 +35,6 @@ const edgeTypes = {
 
 /**
  * 🚨 IMPORTANTE
- * Asegúrate de tener en main.tsx / index.tsx algo como:
- *   import 'reactflow/dist/style.css';
- * Si lo importas aquí, igualmente funcionará, pero a veces Vite/CRA
- * optimiza CSS por componentes y puede omitir clases globales.
  */
 
 /** Hex aleatorio */
@@ -63,9 +59,14 @@ interface StepSpec {
 }
 
 const initialKeys: Record<string, string> = {
-  IK_A: randomHex(32),
-  IK_B: randomHex(32),
-  SPK_B: randomHex(32),
+  IK_A_priv: randomHex(32),
+  IK_A_pub: randomHex(32),
+  IK_B_priv: randomHex(32),
+  IK_B_pub: randomHex(32),
+  SPK_A_priv: randomHex(32),
+  SPK_A_pub: randomHex(32),
+  SPK_B_priv: randomHex(32),
+  SPK_B_pub: randomHex(32),
 };
 
 // ------------------------------------
@@ -75,7 +76,7 @@ const steps: StepSpec[] = [
   /** Paso Inicial Se quiere enviar un mensaje */
   {
     description:
-      "📌 Paso Inicial: Alice desea enviar  un mensaje a Bob",
+      "📌 Paso Inicial: Registro de llaves publicas y privadas de verificacion de identidad",
     documentation: <PasoInDoc />,
     makeNodes: () => [
       {
@@ -89,12 +90,12 @@ const steps: StepSpec[] = [
                 <span style={{ color: "tomato" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
-                Identity key de Alice IK_A
+                Identity key de Alice IK_A_priv
                 <br></br>
                 <span style={{ color: "tomato" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
-                Signed PreKey de Alice SPK_A
+                Signed PreKey de Alice SPK_A_priv
             </ul>
           )
         },
@@ -110,12 +111,12 @@ const steps: StepSpec[] = [
                 <span style={{ color: "violet" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
-                Identity key de Bob IK_B
+                Identity key de Bob IK_B_priv
                 <br></br>
                 <span style={{ color: "violet" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
-                Signed PreKey de Bob SPK_B
+                Signed PreKey de Bob SPK_B_priv
             </ul>
           )
         },
@@ -131,22 +132,22 @@ const steps: StepSpec[] = [
                 <span style={{ color: "green" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
-                Identity key de Alice IK_A
+                Identity key de Alice IK_A_pub
                 <br></br>
                 <span style={{ color: "green" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
-                Signed PreKey de Alice SPK_A
+                Signed PreKey de Alice SPK_A_pub
                 <br></br>
                 <span style={{ color: "yellow" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
-                Identity key de Bob IK_B
+                Identity key de Bob IK_B_pub
                 <br></br>
                 <span style={{ color: "yellow" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
-                Signed PreKey de Bob SPK_B
+                Signed PreKey de Bob SPK_B_pub
             </ul>
           )
         },
@@ -158,21 +159,18 @@ const steps: StepSpec[] = [
         source: "alice",
         target: "server",
         type: "animatedKey3",
-        data: { dur: '3.2s', repeatCount:1, scale:0.3, fill: "#4fc3f7",}
+        data: { dur: '3.2s', repeatCount:1, scale:0.3, fill: "#17e8b6",}
       },
       {
         id: "b-to-s",
         source: "bob",
         target: "server",
         type: "animatedKey3",
-        data: { dur: '3.2s', repeatCount:1, scale:0.4, fill: "#4fc3f7",}
+        data: { dur: '3.2s', repeatCount:1, scale:0.3, fill: "#17c5e8",}
       },
     ],
     makeKeys: (prev) => ({
       ...prev,
-      RK0: hkdf(prev.IK_A + prev.SPK_B + prev.IK_B, "RK0"),
-      CKs0: hkdf(prev.IK_A, "CKs0"),
-      CKr0: hkdf(prev.IK_B, "CKr0"),
     }),
   },
   /** Paso 0: tras X3DH */
@@ -363,7 +361,7 @@ export default function SignalInteractive() {
       {/* Flow */}
       <div
         className="col-span-2 relative border rounded-2xl shadow overflow-hidden"
-        style={{ height: "60vh" /* garantiza altura explícita */ }}
+        style={{ height: "40vh" /* garantiza altura explícita */ }}
       >
         <ReactFlow
           nodes={nodes}
