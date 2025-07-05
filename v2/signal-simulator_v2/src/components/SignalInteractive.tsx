@@ -13,7 +13,8 @@ import {
 } from "lucide-react";
 import "reactflow/dist/style.css";
 import { AliceNode, BobNode, ServerNode } from './CustomNodes';
-import { Paso0Doc, Paso1Doc} from './Documentacion';
+import { KeyEdge, MessageEdge, Key3Edge } from './AnimatedSVGEdge';
+import { PasoInDoc, Paso0Doc, Paso1Doc, Paso2Doc, Paso3Doc} from './Documentacion';
 
 
 
@@ -24,7 +25,12 @@ const nodeTypes = {
   server: ServerNode,
 };
 
+const edgeTypes = {
+  animatedKey: KeyEdge,
+  animatedMessage: MessageEdge,
+  animatedKey3: Key3Edge,
 
+};
 
 
 /**
@@ -50,7 +56,9 @@ const hkdf = (input: string, label: string) =>
 // ------------------------------------
 interface StepSpec {
   description: string;
+  documentation: React.ReactNode;
   makeNodes: (prev: Node[]) => Node[];
+  makeEdges: (prev: Edge[]) => Edge[];
   makeKeys: (prev: Record<string, string>) => Record<string, string>;
 }
 
@@ -68,15 +76,16 @@ const steps: StepSpec[] = [
   {
     description:
       "📌 Paso Inicial: Alice desea enviar  un mensaje a Bob",
+    documentation: <PasoInDoc />,
     makeNodes: () => [
       {
         id: "alice",
         position: { x: 0, y: 150 },
         type: "alice",
-        data: { 
+        data: {
           label: "Alice",
           tooltipContent: (
-            <ul style={{ paddingLeft: 10, margin: 0 }}>              
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
                 <span style={{ color: "tomato" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
@@ -85,19 +94,19 @@ const steps: StepSpec[] = [
                 <span style={{ color: "tomato" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
-                Signed PreKey de Alice SPK_A             
+                Signed PreKey de Alice SPK_A
             </ul>
-          ) 
-        },        
+          )
+        },
       },
       {
         id: "bob",
         position: { x: 420, y: 150 },
         type: "bob",
-        data: { 
+        data: {
           label: "Bob",
           tooltipContent: (
-            <ul style={{ paddingLeft: 10, margin: 0 }}>              
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
                 <span style={{ color: "violet" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
@@ -106,11 +115,10 @@ const steps: StepSpec[] = [
                 <span style={{ color: "violet" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
-                Signed PreKey de Bob SPK_B             
+                Signed PreKey de Bob SPK_B
             </ul>
-          ) 
-        },        
-        
+          )
+        },
       },
       {
         id: "server",
@@ -138,12 +146,26 @@ const steps: StepSpec[] = [
                 <span style={{ color: "yellow" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
-                Signed PreKey de Bob SPK_B             
+                Signed PreKey de Bob SPK_B
             </ul>
           )
         },
-        
-        
+      },
+    ],
+    makeEdges: () => [
+      {
+        id: "a-to-s",
+        source: "alice",
+        target: "server",
+        type: "animatedKey3",
+        data: { dur: '3.2s', repeatCount:1, scale:0.3, fill: "#4fc3f7",}
+      },
+      {
+        id: "b-to-s",
+        source: "bob",
+        target: "server",
+        type: "animatedKey3",
+        data: { dur: '3.2s', repeatCount:1, scale:0.4, fill: "#4fc3f7",}
       },
     ],
     makeKeys: (prev) => ({
@@ -152,18 +174,18 @@ const steps: StepSpec[] = [
       CKs0: hkdf(prev.IK_A, "CKs0"),
       CKr0: hkdf(prev.IK_B, "CKr0"),
     }),
-
   },
   /** Paso 0: tras X3DH */
   {
     description:
-      "📌 Paso 0: Handshake X3DH completo → ambas partes tienen RK₀, CKₛ₀ y CKᵣ₀.",
+      "📌 Paso 0: Handshake X3DH completo → ambas partes tienen RK₀, CKₛ₀ y CKᵣ₀.",
+    documentation: <Paso0Doc />,
     makeNodes: () => [
       {
         id: "alice",
         position: { x: 0, y: 150 },
         type: "alice",
-        data: { 
+        data: {
           label: "Alice",
           tooltipContent: (
             <ul style={{ paddingLeft: 20, margin: 0 }}>
@@ -171,13 +193,13 @@ const steps: StepSpec[] = [
               <li>💬 Puede enviar mensajes</li>
               <li>🌐 Estado: Conectada</li>
             </ul>
-          ) 
-        },        
+          )
+        },
       },
       {
         id: "bob",
         position: { x: 420, y: 150 },
-        data: { label: "Bob" },        
+        data: { label: "Bob" },
         type: "bob",
       },
       {
@@ -186,6 +208,22 @@ const steps: StepSpec[] = [
         data: { label: "WhatsApp Server" },
         tooltip: 'Este es el server',
         type: "server",
+      },
+    ],
+    makeEdges: () => [
+      {
+        id: "a-to-b-0",
+        source: "alice",
+        target: "bob",
+        type: "animatedKey",
+        data: { dur: '1.2s', repeatCount:3, scale:0.3}
+      },
+      {
+        id: "a-to-server-0",
+        source: "alice",
+        target: "server",
+        type: "animatedMessage",
+        data: { dur: '1.2s', repeatCount:3, scale:0.3}
       },
     ],
     makeKeys: (prev) => ({
@@ -198,7 +236,8 @@ const steps: StepSpec[] = [
   /** Paso 1: mensaje se crea y cifra (sobre sin cifrar en Alice) */
   {
     description:
-      "✉️ Paso 1: Alice deriva MK₁ y CKₛ₁, cifra el mensaje (sobre 🔒 aún junto a Alice).",
+      "✉️ Paso 1: Alice deriva MK₁ y CKₛ₁, cifra el mensaje (sobre 🔒 aún junto a Alice).",
+    documentation: <Paso1Doc />,
     makeNodes: (prev) => {
       /** añadimos node del sobre */
       const env: Node = {
@@ -210,6 +249,22 @@ const steps: StepSpec[] = [
       };
       return [...prev, env];
     },
+    makeEdges: () => [
+      {
+        id: "a-to-b-1",
+        source: "env1",
+        target: "env1",
+        type: "animatedKey",
+        data: { dur: '1.2s', repeatCount:3, scale:0.3}
+      },
+      {
+        id: "a-to-server-1",
+        source: "alice",
+        target: "server",
+        type: "animatedMessage",
+        data: { dur: '1.2s', repeatCount:3, scale:0.3}
+      },
+    ],
     makeKeys: (prev) => {
       const MK1 = hkdf(prev.CKs0, "MK1");
       const CKs1 = hkdf(prev.CKs0, "CKs1");
@@ -219,7 +274,8 @@ const steps: StepSpec[] = [
   /** Paso 2: sobre cifrado en tránsito */
   {
     description:
-      "🚚 Paso 2: El mensaje cifrado viaja — sobre se muestra con candado en tránsito.",
+      "🚚 Paso 2: El mensaje cifrado viaja — sobre se muestra con candado en tránsito.",
+    documentation: <Paso2Doc />,
     makeNodes: (prev) =>
       prev.map((n) =>
         n.id === "env1"
@@ -230,12 +286,22 @@ const steps: StepSpec[] = [
             }
           : n
       ),
+      makeEdges: () => [
+      {
+        id: "a-to-b-2",
+        source: "env1",
+        target: "env1",
+        type: "animatedKey",
+        data: { dur: '1.2s', repeatCount:3, scale:0.3}
+      },
+    ],
     makeKeys: (prev) => prev,
   },
   /** Paso 3: sobre llega a Bob y se descifra */
   {
     description:
-      "📬 Paso 3: Bob descifra con MK₁ y avanza CKᵣ — el sobre abierto llega a Bob.",
+      "📬 Paso 3: Bob descifra con MK₁ y avanza CKᵣ — el sobre abierto llega a Bob.",
+    documentation: <Paso3Doc />,
     makeNodes: (prev) =>
       prev.map((n) =>
         n.id === "env1"
@@ -246,6 +312,15 @@ const steps: StepSpec[] = [
             }
           : n
       ),
+      makeEdges: () => [
+      {
+        id: "a-to-b-3",
+        source: "env1",
+        target: "env1",
+        type: "animatedKey",
+        data: { dur: '1.2s', repeatCount:3, scale:0.3}
+      },
+    ],
     makeKeys: (prev) => ({ ...prev, CKr1: hkdf(prev.CKr0, "CKr1") }),
   },
 ];
@@ -255,7 +330,8 @@ const steps: StepSpec[] = [
 // ------------------------------------
 export default function SignalInteractive() {
   const [stepIdx, setStepIdx] = useState(0);
-  const [nodes, setNodes] = useState<Node[]>(steps[0].makeNodes([]));
+  const [nodes, setNodes] = useState<Node[]>(steps[0].makeNodes([]));  
+  const [edges, setEdges] = useState<Edge[]>(steps[0].makeEdges?.([]) || []);
   const [keys, setKeys] = useState<Record<string, string>>(
     steps[0].makeKeys(initialKeys)
   );
@@ -266,22 +342,9 @@ export default function SignalInteractive() {
       setStepIdx(n);
       setNodes((prev) => steps[n].makeNodes(prev));
       setKeys((prev) => steps[n].makeKeys(prev));
+      setEdges((prev) => steps[n].makeEdges?.(prev) || []);
     }
   };
-
-  // Memoizar edges evita el warning "nodeTypes/edgeTypes" de React Flow
-  const edges: Edge[] = useMemo(() => {
-    return nodes.some((n) => n.id === "env1")
-      ? [
-          {
-            id: "edge-env1",
-            source: "alice",
-            target: "bob",
-            animated: true,
-          },
-        ]
-      : [];
-  }, [nodes]);
 
   const keyList = useMemo(
     () =>
@@ -300,12 +363,13 @@ export default function SignalInteractive() {
       {/* Flow */}
       <div
         className="col-span-2 relative border rounded-2xl shadow overflow-hidden"
-        style={{ height: "40vh" /* garantiza altura explícita */ }}
+        style={{ height: "60vh" /* garantiza altura explícita */ }}
       >
         <ReactFlow
           nodes={nodes}
           edges={edges}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
           fitView
           style={{ width: "100%", height: "100%" }}
         >
@@ -320,39 +384,30 @@ export default function SignalInteractive() {
           Siguiente paso
         </button>
       </div>
-
       {/* Panel */}
       <div
         style={{
           display: "flex",
-          gap: "32px",          
+          gap: "32px",
           padding: "16px",
           background: "#fff",
           margin: "16px 0",
           maxWidth: "100%",
           minHeight: "180px"
         }}>
-
-
           <div style={{ flex: 1 }} className="border rounded-2xl shadow p-4 overflow-y-auto">
             <p className="mb-4 font-medium leading-relaxed whitespace-pre-wrap">
               {steps[stepIdx].description}
             </p>
             <ul className="space-y-1 list-none pb-12">{keyList}</ul>
           </div>
-
-          <div 
+          <div
             style={{ flex: 1,
             border: "2px solid orange",
             borderRadius: "8px", }}>
-            <Paso1Doc />
+            {steps[stepIdx].documentation}
           </div>
-
       </div>
-      
-
-
-
     </div>
   );
 }

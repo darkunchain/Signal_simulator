@@ -1,6 +1,6 @@
 import React from "react";
 
-export const Paso0Doc: React.FC = () => (
+export const PasoInDoc: React.FC = () => (
   <div>
     <h4>¿Qué ocurre en el paso inicial?</h4>
     <ul>
@@ -21,7 +21,26 @@ export const Paso0Doc: React.FC = () => (
 );
 
 
+export const Paso0Doc: React.FC = () => (
+  <div>
+    <h4>¿Qué ocurre en el paso inicial?</h4>
+    <p>
+      <i>Nota:</i> Aquí puedes escribir toda la documentación que quieras, incluir <a href="#">enlaces</a> o imágenes.
+    </p>
+  </div>
+);
+
+
 
 export const Paso1Doc: React.FC = () => (
-    <div>hola mundo</div>
+    <div>hola mundo, Paso 1</div>
+);
+
+
+export const Paso2Doc: React.FC = () => (
+    <div>hola mundo, Paso 2</div>
+);
+
+export const Paso3Doc: React.FC = () => (
+    <div>hola mundo, Paso 3</div>
 );
