@@ -1,21 +1,11 @@
 import React, { useMemo, useState } from "react";
-import ReactFlow, {
-  Background,
-  Controls,
-  Edge,
-  Node,
-} from "reactflow";
-import {
-  KeyRound as KeyIcon,
-  Mail as MailIcon,
-  Lock as LockIcon,
-  MailOpen as MailOpenIcon,
-} from "lucide-react";
+import ReactFlow, {Background, Controls, Edge, Node} from "reactflow";
+import {KeyRound as KeyIcon, Mail as MailIcon, Lock as LockIcon, MailOpen as MailOpenIcon,} from "lucide-react";
 import "reactflow/dist/style.css";
 import { AliceNode, BobNode, ServerNode } from './CustomNodes';
 import { KeyEdge, MessageEdge, Key3Edge } from './AnimatedSVGEdge';
 import { PasoInDoc, Paso0Doc, Paso1Doc, Paso2Doc, Paso3Doc} from './Documentacion';
-
+import '../index.css';
 
 
 
@@ -73,7 +63,10 @@ const initialKeys: Record<string, string> = {
 // Definición de pasos
 // ------------------------------------
 const steps: StepSpec[] = [
-  /** Paso Inicial Se quiere enviar un mensaje */
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+              /** Paso Inicial Llaves de registro al servidor */
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   {
     description:
       "📌 Paso Inicial: Registro de llaves publicas y privadas de verificacion de identidad",
@@ -173,7 +166,9 @@ const steps: StepSpec[] = [
       ...prev,
     }),
   },
-  /** Paso 0: tras X3DH */
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+              /** Paso 0 Alice quiere enviar el primer mensaje */
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   {
     description:
       "📌 Paso 0: Handshake X3DH completo → ambas partes tienen RK₀, CKₛ₀ y CKᵣ₀.",
@@ -186,10 +181,16 @@ const steps: StepSpec[] = [
         data: {
           label: "Alice",
           tooltipContent: (
-            <ul style={{ paddingLeft: 20, margin: 0 }}>
-              <li>🔒 Cifrado activo</li>
-              <li>💬 Puede enviar mensajes</li>
-              <li>🌐 Estado: Conectada</li>
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
+                <span style={{ color: "tomato" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Identity key publica de Bob IK_B_pub
+                <br></br>
+                <span style={{ color: "tomato" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Signed PreKey publica de Bob SPK_B_priv
             </ul>
           )
         },
@@ -197,15 +198,54 @@ const steps: StepSpec[] = [
       {
         id: "bob",
         position: { x: 420, y: 150 },
-        data: { label: "Bob" },
         type: "bob",
+        data: {
+          label: "Bob",
+          tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
+                <span style={{ color: "violet" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+
+                <br></br>
+                <span style={{ color: "violet" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Signed PreKey de Bob SPK_B_priv
+            </ul>
+          )
+        },
       },
       {
         id: "server",
         position: { x: 210, y: 0 },
-        data: { label: "WhatsApp Server" },
-        tooltip: 'Este es el server',
         type: "server",
+        data: {
+          label: "WhatsApp Server",
+          tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
+                <span style={{ color: "green" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Identity key de Alice IK_A_pub
+                <br></br>
+                <span style={{ color: "green" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Signed PreKey de Alice SPK_A_pub
+                <br></br>
+                <span style={{ color: "yellow" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Identity key de Bob IK_B_pub
+                <br></br>
+                <span style={{ color: "yellow" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Signed PreKey de Bob SPK_B_pub
+            </ul>
+          )
+        },
       },
     ],
     makeEdges: () => [
@@ -231,7 +271,9 @@ const steps: StepSpec[] = [
       CKr0: hkdf(prev.IK_B, "CKr0"),
     }),
   },
-  /** Paso 1: mensaje se crea y cifra (sobre sin cifrar en Alice) */
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+              /** Paso 1 Alice quiere enviar el primer mensaje */
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   {
     description:
       "✉️ Paso 1: Alice deriva MK₁ y CKₛ₁, cifra el mensaje (sobre 🔒 aún junto a Alice).",
@@ -269,7 +311,9 @@ const steps: StepSpec[] = [
       return { ...prev, MK1, CKs1 };
     },
   },
-  /** Paso 2: sobre cifrado en tránsito */
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+              /** Paso 2 Alice quiere enviar el primer mensaje */
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   {
     description:
       "🚚 Paso 2: El mensaje cifrado viaja — sobre se muestra con candado en tránsito.",
@@ -295,7 +339,9 @@ const steps: StepSpec[] = [
     ],
     makeKeys: (prev) => prev,
   },
-  /** Paso 3: sobre llega a Bob y se descifra */
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+              /** Paso 3 Alice quiere enviar el primer mensaje */
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   {
     description:
       "📬 Paso 3: Bob descifra con MK₁ y avanza CKᵣ — el sobre abierto llega a Bob.",
@@ -324,11 +370,16 @@ const steps: StepSpec[] = [
 ];
 
 // ------------------------------------
-// Componente principal
 // ------------------------------------
+// ------------------------------------
+       // Componente principal
+// ------------------------------------
+// ------------------------------------
+// ------------------------------------
+
 export default function SignalInteractive() {
   const [stepIdx, setStepIdx] = useState(0);
-  const [nodes, setNodes] = useState<Node[]>(steps[0].makeNodes([]));  
+  const [nodes, setNodes] = useState<Node[]>(steps[0].makeNodes([]));
   const [edges, setEdges] = useState<Edge[]>(steps[0].makeEdges?.([]) || []);
   const [keys, setKeys] = useState<Record<string, string>>(
     steps[0].makeKeys(initialKeys)
@@ -377,9 +428,14 @@ export default function SignalInteractive() {
         <button
           onClick={next}
           disabled={stepIdx >= steps.length - 1}
-          className="absolute bottom-4 left-4 bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-40"
+          className="rounded disabled:opacity-40"
         >
-          Siguiente paso
+          <a href="#0" className="button">
+          <em> </em>
+            <span>
+              Siguiente paso
+            </span>
+          </a>
         </button>
       </div>
       {/* Panel */}
@@ -394,10 +450,10 @@ export default function SignalInteractive() {
           minHeight: "180px"
         }}>
           <div style={{ flex: 1 }} className="border rounded-2xl shadow p-4 overflow-y-auto">
-            <p className="mb-4 font-medium leading-relaxed whitespace-pre-wrap">
+            <h1 className="mb-4 font-medium leading-relaxed whitespace-pre-wrap">
               {steps[stepIdx].description}
-            </p>
-            <ul className="space-y-1 list-none pb-12">{keyList}</ul>
+            </h1>
+            <p className="space-y-1 list-none pb-12">{keyList}</p>
           </div>
           <div
             style={{ flex: 1,
