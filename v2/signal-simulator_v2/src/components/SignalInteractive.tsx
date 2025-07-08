@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import ReactFlow, {Background, Controls, Edge, Node} from "reactflow";
 import {KeyRound as KeyIcon, Mail as MailIcon, Lock as LockIcon, MailOpen as MailOpenIcon,} from "lucide-react";
 import "reactflow/dist/style.css";
-import { AliceNode, BobNode, ServerNode } from './CustomNodes';
+import { AliceNode, BobNode, ServerNode, HKDFNode, ECDHNode } from './CustomNodes';
 import { KeyEdge, MessageEdge, Key3Edge } from './AnimatedSVGEdge';
 import { PasoInDoc, Paso0Doc, Paso1Doc, Paso2Doc, Paso3Doc} from './Documentacion';
 import '../index.css';
@@ -13,6 +13,8 @@ const nodeTypes = {
   alice: AliceNode,
   bob: BobNode,
   server: ServerNode,
+  HKDF: HKDFNode,
+  ECDH: ECDHNode,
 };
 
 const edgeTypes = {
@@ -171,7 +173,7 @@ const steps: StepSpec[] = [
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   {
     description:
-      "📌 Paso 0: Handshake X3DH completo → ambas partes tienen RK₀, CKₛ₀ y CKᵣ₀.",
+      "📌 Paso 0: Alice desea enviar el primer mensaje.",
     documentation: <Paso0Doc />,
     makeNodes: () => [
       {
@@ -196,17 +198,17 @@ const steps: StepSpec[] = [
         },
       },
       {
-        id: "bob",
-        position: { x: 420, y: 150 },
-        type: "bob",
+        id: "HKDF",
+        position: { x: 200, y: 150 },
+        type: "HKDF",
         data: {
-          label: "Bob",
+          label: "",
+          width: 150,
           tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
                 <span style={{ color: "violet" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
-
                 <br></br>
                 <span style={{ color: "violet" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
@@ -250,25 +252,25 @@ const steps: StepSpec[] = [
     ],
     makeEdges: () => [
       {
-        id: "a-to-b-0",
-        source: "alice",
-        target: "bob",
+        id: "server-to-a",
+        source: "server",
+        target: "alice",
         type: "animatedKey",
-        data: { dur: '1.2s', repeatCount:3, scale:0.3}
+        data: { dur: '3s', repeatCount:3, scale:0.3}
       },
       {
-        id: "a-to-server-0",
+        id: "a-to-HKDF",
         source: "alice",
-        target: "server",
+        target: "HKDF",
         type: "animatedMessage",
-        data: { dur: '1.2s', repeatCount:3, scale:0.3}
+        data: { dur: '3s', repeatCount:3, scale:0.3}
       },
     ],
     makeKeys: (prev) => ({
       ...prev,
-      RK0: hkdf(prev.IK_A + prev.SPK_B + prev.IK_B, "RK0"),
-      CKs0: hkdf(prev.IK_A, "CKs0"),
-      CKr0: hkdf(prev.IK_B, "CKr0"),
+      RK0: hkdf(prev.IK_A_priv + prev.SPK_B_pub + prev.IK_B_pub, "RK0"),
+      CKs0: hkdf(prev.IK_A_priv, "CKs0"),
+      CKr0: hkdf(prev.IK_B_pub, "CKr0"),
     }),
   },
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
