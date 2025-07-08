@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import ReactFlow, {Background, Controls, Edge, Node} from "reactflow";
+import ReactFlow, {Background, Controls, Edge, Node, Position} from "reactflow";
 import {KeyRound as KeyIcon, Mail as MailIcon, Lock as LockIcon, MailOpen as MailOpenIcon,} from "lucide-react";
 import "reactflow/dist/style.css";
 import { AliceNode, BobNode, ServerNode, HKDFNode, ECDHNode } from './CustomNodes';
@@ -203,6 +203,8 @@ const steps: StepSpec[] = [
         type: "HKDF",
         data: {
           label: "",
+          target: Position.Left,
+          source: Position.Left,
           width: 150,
           tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
@@ -432,7 +434,7 @@ export default function SignalInteractive() {
           disabled={stepIdx >= steps.length - 1}
           className="rounded disabled:opacity-40"
         >
-          <a href="#0" className="button">
+          <a className="button">
           <em> </em>
             <span>
               Siguiente paso
