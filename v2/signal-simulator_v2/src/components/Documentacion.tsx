@@ -163,17 +163,17 @@ export const Paso0Doc: React.FC = () => (
     </li>
     </ol>
     <hr />
-    <p><strong>Proceso de Alice para crear las claves de cifrado:</strong></p>
+    <h2><strong>Proceso de Alice para crear las claves de cifrado:</strong></h2>
     <p className="ds-markdown-paragraph">Alice usa estas claves para calcular una&nbsp;<strong>clave compartida (Root Key)</strong>&nbsp;mediante&nbsp;<strong>X3DH</strong>:</p>
     <ol start={1}>
-    <li><strong>Genera sus propias claves ef&iacute;meras:</strong>
+    <li><h3><strong>Genera sus propias claves ef&iacute;meras:</strong></h3>
     <ul>
     <li>
     <p className="ds-markdown-paragraph">Alice crea una&nbsp;<strong>clave ef&iacute;mera (EK_A)</strong>&nbsp;(usada solo para esta sesi&oacute;n).</p>
     </li>
     </ul>
     </li>
-    <li><strong>Calcula 4 intercambios Diffie-Hellman (DH):</strong>
+    <li><h3><strong>Calcula 4 intercambios Diffie-Hellman (DH):</strong></h3>
     <p className="ds-markdown-paragraph"><br />Alice combina sus claves con las de Bob para derivar secretos compartidos:</p>
     <ul>
     <li>
@@ -190,7 +190,7 @@ export const Paso0Doc: React.FC = () => (
     </li>
     </ul>
     </li>
-    <li><strong>Deriva la "clave ra&iacute;z" (Root Key) y "cadena" (Chain Key):</strong>
+    <li><h3><strong>Deriva la "clave ra&iacute;z" (Root Key) y "cadena" (Chain Key):</strong></h3>
     <ul>
     <li>
     <p className="ds-markdown-paragraph">Concatena los resultados (<code>DH1 || DH2 || DH3 || DH4</code>) y aplica un&nbsp;<strong>KDF</strong>&nbsp;(funci&oacute;n de derivaci&oacute;n de claves, como HKDF).</p>

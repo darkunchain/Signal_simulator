@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import ReactFlow, {Background, Controls, Edge, Node, Position} from "reactflow";
 import {KeyRound as KeyIcon, Mail as MailIcon, Lock as LockIcon, MailOpen as MailOpenIcon,} from "lucide-react";
 import "reactflow/dist/style.css";
-import { AliceNode, BobNode, ServerNode, HKDFNode, ECDHNode } from './CustomNodes';
+import { AliceNode, BobNode, ServerNode, HKDFNode, ECDHNode, X3DHNode } from './CustomNodes';
 import { KeyEdge, MessageEdge, Key3Edge } from './AnimatedSVGEdge';
 import { PasoInDoc, Paso0Doc, Paso1Doc, Paso2Doc, Paso3Doc} from './Documentacion';
 import '../index.css';
@@ -15,6 +15,7 @@ const nodeTypes = {
   server: ServerNode,
   HKDF: HKDFNode,
   ECDH: ECDHNode,
+  X3DH: X3DHNode,
 };
 
 const edgeTypes = {
@@ -184,38 +185,58 @@ const steps: StepSpec[] = [
           label: "Alice",
           tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
+                <span style={{ color: "green" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Identity key publica de Bob IK_B
+                <br></br>
+                <span style={{ color: "green" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Signed PreKey publica de Bob SPK_B
+                <br></br>
+                <span style={{ color: "green" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                OneTime PreKey publica de Bob OPK_B
+                <br /><br />
                 <span style={{ color: "tomato" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
-                Identity key publica de Bob IK_B_pub
+                Identity key publica de Alice IK_A
                 <br></br>
                 <span style={{ color: "tomato" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
-                Signed PreKey publica de Bob SPK_B_priv
+                Llave Efimera de Alice EK_A
+                <br></br>
             </ul>
           )
         },
       },
       {
-        id: "HKDF",
+        id: "X3DH",
         position: { x: 200, y: 150 },
-        type: "HKDF",
+        type: "X3DH",
         data: {
           label: "",
           target: Position.Left,
-          source: Position.Left,
+          source: Position.Right,
           width: 150,
           tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
-                <span style={{ color: "violet" }}>
-                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                </span>
+                <strong>DH1 = DH(IK_A, SPK_B)</strong><br />
+                <em>(Identity Key de Alice + Signed PreKey de Bob)</em>
                 <br></br>
-                <span style={{ color: "violet" }}>
-                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                </span>
-                Signed PreKey de Bob SPK_B_priv
+                <strong>DH2 = DH(EK_A, IK_B)</strong><br />
+                <em>(Clave efímera de Alice + Identity Key de Bob)</em>
+                <br></br>
+                <strong>DH3 = DH(EK_A, SPK_B)</strong><br />
+                <em>(Clave efímera de Alice + Signed PreKey de Bob)</em>
+                <br></br>
+                <strong>DH4 = DH(EK_A, OPK_B)</strong><br />
+                <em>(si OPK_B existe)</em>
+                <br></br>
             </ul>
           )
         },
@@ -227,26 +248,33 @@ const steps: StepSpec[] = [
         data: {
           label: "WhatsApp Server",
           tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>                             
+            </ul>
+          )
+        },
+      },
+      {
+        id: "HKDF",
+        position: { x: 450, y: 150 },
+        type: "HKDF",
+        data: {
+          label: "",
+          target: Position.Left,
+          source: Position.Left,
+          width: 150,
+          tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
-                <span style={{ color: "green" }}>
-                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                </span>
-                Identity key de Alice IK_A_pub
+                Concatena los resultados <strong>(DH1 || DH2 || DH3 || DH4)</strong> y aplica un KDF <em>(función de derivación de claves, como HKDF).</em><br />
                 <br></br>
-                <span style={{ color: "green" }}>
+                <span style={{ color: "Tomato" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
-                Signed PreKey de Alice SPK_A_pub
+                <strong>Root Key:</strong> Clave maestra para la sesión.
                 <br></br>
-                <span style={{ color: "yellow" }}>
+                <span style={{ color: "violet" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
-                Identity key de Bob IK_B_pub
-                <br></br>
-                <span style={{ color: "yellow" }}>
-                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                </span>
-                Signed PreKey de Bob SPK_B_pub
+                <strong>Chain Key:</strong> Clave inicial para derivar Message Keys (usadas por mensaje)
             </ul>
           )
         },
@@ -257,16 +285,38 @@ const steps: StepSpec[] = [
         id: "server-to-a",
         source: "server",
         target: "alice",
-        type: "animatedKey",
-        data: { dur: '3s', repeatCount:3, scale:0.3}
+        type: "animatedKey3",
+        data: { dur: '4s', repeatCount:1, scale:0.3, fill: "#9beb34",}
       },
       {
-        id: "a-to-HKDF",
+        id: "a-to-X3DH",
         source: "alice",
-        target: "HKDF",
-        type: "animatedMessage",
-        data: { dur: '3s', repeatCount:3, scale:0.3}
+        target: "X3DH",
+        type: "animatedKey3",
+        data: { dur: '4s', repeatCount:1, scale:0.3, fill: "#9334eb",delay: 4}
       },
+      {
+        id: "a-to-X3DH1",
+        source: "alice",
+        target: "X3DH",
+        type: "animatedKey3",
+        data: { dur: '4s', repeatCount:1, scale:0.3, fill: "#9beb34",delay: 4.3}
+      },
+      {
+        id: "X3DH-to-HKDF",
+        source: "X3DH",
+        target: "HKDF",
+        type: "animatedKey",
+        data: { dur: '3s', repeatCount:1, scale:0.3, fill: "#eb5334",delay: 9}
+      },
+      {
+        id: "X3DH-to-HKDF1",
+        source: "X3DH",
+        target: "HKDF",
+        type: "animatedKey",
+        data: { dur: '3s', repeatCount:1, scale:0.3, fill: "#eb5334",delay: 9.3}
+      },
+
     ],
     makeKeys: (prev) => ({
       ...prev,
@@ -276,11 +326,11 @@ const steps: StepSpec[] = [
     }),
   },
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-              /** Paso 1 Alice quiere enviar el primer mensaje */
+              /** Paso 1 Cifrado del mensaje */
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   {
     description:
-      "✉️ Paso 1: Alice deriva MK₁ y CKₛ₁, cifra el mensaje (sobre 🔒 aún junto a Alice).",
+      "✉️ Paso 1: Alice cifra el mensaje (sobre 🔒 aún junto a Alice).",
     documentation: <Paso1Doc />,
     makeNodes: (prev) => {
       /** añadimos node del sobre */
@@ -441,6 +491,8 @@ export default function SignalInteractive() {
             </span>
           </a>
         </button>
+        <br/><br/>
+
       </div>
       {/* Panel */}
       <div

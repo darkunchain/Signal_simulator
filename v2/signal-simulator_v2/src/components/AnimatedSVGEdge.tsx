@@ -25,6 +25,7 @@ export function KeyEdge({
     const repeatCount = data?.repeatCount || "indefinite";
     const scaleEdge = data?.scale || 1;
     const fill = data?.fill || "#ffca28";
+    const delay = data?.delay || 0;
     const [visible, setVisible] = useState(true);
 
     useEffect(() => {
@@ -44,7 +45,7 @@ export function KeyEdge({
             {/* SVG overlay para animar el sobre */}
             <svg style={{ overflow: "visible", pointerEvents: "none", position: "absolute" }} width="12" height="12">
                 <g transform={`scale(${scaleEdge})`}>
-                <animateMotion dur={dur} repeatCount={repeatCount} path={edgePath} />
+                <animateMotion dur={dur} repeatCount={repeatCount} path={edgePath} begin={`${delay}s`}/>
                 {/* El ícono del sobre como <g> */}
                 <g
                     id="layer1"
@@ -110,6 +111,7 @@ export function MessageEdge({
     const dur = data?.dur || "2s";
     const repeatCount = data?.repeatCount || "indefinite";
     const scaleEdge = data?.scale || 1;
+    const delay = data?.delay || 0;
     const [visible, setVisible] = useState(true);
 
     useEffect(() => {
@@ -128,7 +130,7 @@ export function MessageEdge({
             {/* SVG overlay para animar el sobre */}
             <svg style={{ overflow: "visible", pointerEvents: "none", position: "absolute" }} width="12" height="12">
                 <g transform={`scale(${scaleEdge})`}>
-                <animateMotion dur={dur} repeatCount={repeatCount} path={edgePath} />
+                <animateMotion dur={dur} repeatCount={repeatCount} path={edgePath} begin={`${delay}s`} />
                 {/* El ícono del sobre como <g> */}
                 <g
                     id="layer1"
@@ -186,6 +188,7 @@ export function Key3Edge({
     const repeatCount = data?.repeatCount || "indefinite";
     const scaleEdge = data?.scale || 1;
     const fill = data?.fill || "#ffca28";
+    const delay = data?.delay || 0;
     const [visible, setVisible] = useState(true);
 
     useEffect(() => {
@@ -204,7 +207,7 @@ export function Key3Edge({
             {/* SVG overlay para animar el sobre */}
             <svg style={{ overflow: "visible", pointerEvents: "none", position: "absolute" }} width="12" height="12">
                 <g transform={`scale(${scaleEdge})`}>
-                <animateMotion dur={dur} repeatCount={repeatCount} path={edgePath} />
+                <animateMotion dur={dur} repeatCount={repeatCount} path={edgePath} begin={`${delay}s`} />
                 {/* El ícono del sobre como <g> */}
                     <g id="layer1" transform="translate(-138.52928,-109.84163)">
                         <g d="g6">
