@@ -6,6 +6,9 @@ import { AliceNode, BobNode, ServerNode, HKDFNode, ECDHNode, X3DHNode } from './
 import { KeyEdge, MessageEdge, Key3Edge } from './AnimatedSVGEdge';
 import { PasoInDoc, Paso0Doc, Paso1Doc, Paso2Doc, Paso3Doc} from './Documentacion';
 import '../index.css';
+import nacl from 'tweetnacl';                   // npm i tweetnacl
+import { encodeBase64 } from 'tweetnacl-util';  // npm i tweetnacl-util
+import {sha256} from 'js-sha256';
 
 
 
@@ -24,6 +27,20 @@ const edgeTypes = {
   animatedKey3: Key3Edge,
 
 };
+
+
+function hexToBytes(hex: string) {
+  if (hex.length % 2 !== 0) throw new Error("Hex string must have even length");
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < hex.length; i += 2) {
+    bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+  }
+  return bytes;
+}
+
+function hkdfSyncDemo(keyHex: string, info: string): string {
+  return sha256(keyHex + info);
+}
 
 
 /**
@@ -248,7 +265,7 @@ const steps: StepSpec[] = [
         data: {
           label: "WhatsApp Server",
           tooltipContent: (
-            <ul style={{ paddingLeft: 10, margin: 0 }}>                             
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
             </ul>
           )
         },
@@ -360,9 +377,24 @@ const steps: StepSpec[] = [
       },
     ],
     makeKeys: (prev) => {
-      const MK1 = hkdf(prev.CKs0, "MK1");
-      const CKs1 = hkdf(prev.CKs0, "CKs1");
-      return { ...prev, MK1, CKs1 };
+      const MK1 = hkdfSyncDemo(prev.CKs0, "MK1"); // string hex de 64 chars
+      const mk1Bytes = hexToBytes(MK1); // Uint8Array de 32 bytes
+      const CKs1 = hkdfSyncDemo(prev.CKs0, "CKs1");
+      const CKs1Bytes = hexToBytes(CKs1);
+      const mk1Uint8 = hexToBytes(MK1);    // ← Uint8Array de 32 bytes
+      console.log("Longitud de la clave:", mk1Uint8.length);
+      const nonce = nacl.randomBytes(nacl.secretbox.nonceLength);
+      const plaintext = new TextEncoder().encode('Hola Bob');
+      const cipherTag = nacl.secretbox(plaintext, nonce, mk1Uint8);
+      const wire = new Uint8Array(nonce.length + cipherTag.length);
+      wire.set(nonce, 0);
+      wire.set(cipherTag, nonce.length);
+      const wireHex  = Array.from(wire).map(b => b.toString(16).padStart(2, '0')).join('');
+      const wireB64  = encodeBase64(wire);
+      return { ...prev, MK1, CKs1, wireHex, wireB64,
+        nonce: Array.from(nonce).map(b => b.toString(16).padStart(2, '0')).join(''),
+        plaintext: Array.from(plaintext).map(b => b.toString(16).padStart(2, '0')).join(''),
+      };
     },
   },
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
