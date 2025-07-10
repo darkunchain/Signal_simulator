@@ -7,6 +7,7 @@ import serverPng from '../assets/images/server.png';
 import ECDHPng from '../assets/images/ECDH.png';
 import HKDFPng from '../assets/images/HKDF.png';
 import X3DHPng from '../assets/images/X3DH.png';
+import vacioPng from '../assets/images/vacio.png';
 
 
 
@@ -71,6 +72,17 @@ export const X3DHNode: React.FC<NodeProps> = ({ data, id }) => (
   <div style={{ textAlign: "center" }}>
     <Handle type="target" position={data.target || Position.Bottom} />
     <img src={X3DHPng} alt="X3DH" width={data.width || 40} id={`tooltip-anchor-${id}`} style={{ cursor: 'pointer' }}/>
+    <div>{data.label}</div>
+    <Tooltip anchorSelect={`#tooltip-anchor-${id}`} place="top" content={data.tooltip || 'Info del servidor'} render={() => data.tooltipContent}/>
+    <Handle type="source" position={data.source || Position.Bottom} />
+  </div>
+);
+
+// Nodo X3DH
+export const vacioNode: React.FC<NodeProps> = ({ data, id }) => (
+  <div style={{ textAlign: "center" }}>
+    <Handle type="target" position={data.target || Position.Bottom} />
+    <img src={vacioPng} alt="vacio" width={data.width || 40} id={`tooltip-anchor-${id}`} style={{ cursor: 'pointer' }}/>
     <div>{data.label}</div>
     <Tooltip anchorSelect={`#tooltip-anchor-${id}`} place="top" content={data.tooltip || 'Info del servidor'} render={() => data.tooltipContent}/>
     <Handle type="source" position={data.source || Position.Bottom} />

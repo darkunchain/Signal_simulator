@@ -27,12 +27,16 @@ export function KeyEdge({
     const fill = data?.fill || "#ffca28";
     const delay = data?.delay || 0;
     const [visible, setVisible] = useState(true);
+    const keyPoints = data?.keyPoints || "0;1"; // default: toda la trayectoria
+    const keyTimes = data?.keyTimes || "0;1";
+    const vis = data?.vis || 0
 
     useEffect(() => {
         if (repeatCount !== "indefinite") {
-        // Oculta después de (dur * repeatCount) segundos
-        const total = dur * repeatCount * 1000;
+        const total = vis * 1000;
+        console.log('total: ', total, 'visible_antes: ', visible)
         const timeout = setTimeout(() => setVisible(false), total);
+        console.log('visible_despues: ', visible)
         return () => clearTimeout(timeout);
         }
     }, [dur, repeatCount]);
@@ -43,9 +47,10 @@ export function KeyEdge({
              {/* Dibuja la línea base */}
             <BaseEdge id={id} path={edgePath} />
             {/* SVG overlay para animar el sobre */}
+            {visible && (
             <svg style={{ overflow: "visible", pointerEvents: "none", position: "absolute" }} width="12" height="12">
                 <g transform={`scale(${scaleEdge})`}>
-                <animateMotion dur={dur} repeatCount={repeatCount} path={edgePath} begin={`${delay}s`}/>
+                <animateMotion dur={dur} repeatCount={repeatCount} path={edgePath} begin={`${delay}s`} keyPoints={keyPoints} keyTimes={keyTimes}/>
                 {/* El ícono del sobre como <g> */}
                 <g
                     id="layer1"
@@ -83,86 +88,10 @@ export function KeyEdge({
                         </g>
                 </g>
             </svg>
+            )}
         </>
     );
 }
-
-
-
-
-export function MessageEdge({
-    id,
-    sourceX,
-    sourceY,
-    targetX,
-    targetY,
-    sourcePosition,
-    targetPosition,
-    data
-}: EdgeProps) {
-    const [edgePath] = getBezierPath({
-        sourceX,
-        sourceY,
-        sourcePosition,
-        targetX,
-        targetY,
-        targetPosition,
-    });
-    const dur = data?.dur || "2s";
-    const repeatCount = data?.repeatCount || "indefinite";
-    const scaleEdge = data?.scale || 1;
-    const delay = data?.delay || 0;
-    const [visible, setVisible] = useState(true);
-
-    useEffect(() => {
-        if (repeatCount !== "indefinite") {
-        // Oculta después de (dur * repeatCount) segundos
-        const total = dur * repeatCount * 1000;
-        const timeout = setTimeout(() => setVisible(false), total);
-        return () => clearTimeout(timeout);
-        }
-    }, [dur, repeatCount]);
-
-    return (
-        <>
-            {/* Dibuja la línea base */}
-            <BaseEdge id={id} path={edgePath} />
-            {/* SVG overlay para animar el sobre */}
-            <svg style={{ overflow: "visible", pointerEvents: "none", position: "absolute" }} width="12" height="12">
-                <g transform={`scale(${scaleEdge})`}>
-                <animateMotion dur={dur} repeatCount={repeatCount} path={edgePath} begin={`${delay}s`} />
-                {/* El ícono del sobre como <g> */}
-                <g
-                    id="layer1"
-                    transform="translate(-110.41045,-43.051437)">
-                    <path
-                    style={{fill:"#fdfdfd",fillOpacity:1,stroke:"#000000",strokeWidth:0.215332,strokeLinecap:"butt",strokeLinejoin:"miter",strokeOpacity:1,}}
-                    d="M 110.60486,55.429656 115.8805,76.316877 138.81338,65.7656 137.09072,51.984341 128.15443,62.427952 Z"
-                    />
-                    <path
-                    style={{fill:"#d2ddf7",fillOpacity:1,stroke:"#000000",strokeWidth:0.215332,strokeLinecap:"butt",strokeLinejoin:"miter",strokeOpacity:1}}
-                    d="m 110.60486,55.429658 11.8971,-11.520274 c 1.35462,-1.14272 2.48313,-0.815816 3.55299,-0.107665 l 11.03577,8.182622 -8.93629,10.443613 z"
-                    />
-                    <path
-                    d="m 116.5752,75.726858 -0.94839,-1.464693 10.4205,-13.408646 c 0.81086,-1.024627 1.7235,-1.835147 3.55914,-0.704216 l 8.83125,4.986608 0.0592,0.686787 z"
-                    style={{display:"inline",fill:"none",stroke:"#000000",strokeWidth:0.622598,strokeLinecap:"butt",strokeLinejoin:"miter",strokeMiterlimit:4,strokeDasharray:"none",strokeOpacity:1}}
-                    />
-                    <path
-                    style={{fill:"#d2ddf7",fillOpacity:1,stroke:"#000000",strokeWidth:0.215332,strokeLinecap:"butt",strokeLinejoin:"miter",strokeOpacity:1}}
-                    d="m 115.8805,76.316879 -0.36546,-1.226784 10.84873,-14.293674 c 0.81086,-1.024628 1.72351,-1.835147 3.55914,-0.704216 l 8.83125,4.986608 0.0592,0.686787 z"
-                    />
-                    <path
-                    style={{fill:"#15578b",fillOpacity:1,stroke:"none",strokeWidth:0.0406927,strokeLinecap:"butt",strokeLinejoin:"miter",strokeMiterlimit:4,strokeDasharray:"none",strokeOpacity:1}}
-                    d="m 126.5998,50.441988 v -1.06584 h 1.14198 l -0.26646,4.948542 c 0.16148,0.578166 0.68496,1.319226 1.82716,-0.304525 1.24617,-5.429005 -1.98709,-7.184824 -4.87241,-7.194421 -3.65487,0.302505 -6.99125,5.501172 -1.9033,10.277743 3.37677,2.468328 6.00009,0.528419 7.27056,-0.989707 0.28422,-0.1218 0.47973,-0.14223 0.26646,0.304524 -2.11494,2.442497 -5.97778,3.340514 -8.75511,0.989708 -5.58534,-5.444038 -0.66978,-11.160533 2.81687,-11.229383 6.81746,-0.01883 6.30873,6.84824 5.55759,8.06993 -1.32747,1.994252 -2.80304,1.177499 -3.19753,0.07613 -1.07517,2.861423 -3.55923,1.340672 -3.92077,-0.07613 -0.6924,-2.531166 0.48276,-4.141392 1.78909,-4.758215 1.09005,-0.465148 1.88259,0.06541 2.21971,0.954024 l -0.4901,0.08564 c -0.93089,-1.482839 -1.53705,-0.340501 -1.69741,0.162335 -0.42708,0.953532 -0.63004,3.305175 -0.10768,4.239353 0.76934,0.910553 1.151,0.27045 1.57462,-0.201874 0.84013,-2.016896 0.59333,-3.085176 0.23722,-4.195614 z"
-                    />
-                    </g>
-                </g>
-            </svg>
-        </>
-    );
-}
-
-
 
 
 
@@ -190,12 +119,17 @@ export function Key3Edge({
     const fill = data?.fill || "#ffca28";
     const delay = data?.delay || 0;
     const [visible, setVisible] = useState(true);
+    const keyPoints = data?.keyPoints || "0;1"; // default: toda la trayectoria
+    const keyTimes = data?.keyTimes || "0;1";
+    const vis = data?.vis || 0
 
     useEffect(() => {
         if (repeatCount !== "indefinite") {
         // Oculta después de (dur * repeatCount) segundos
-        const total = dur * repeatCount * 1000;
+        const total = vis * 1000;
+        console.log('total_3key: ', total, 'visible_antes:',visible)
         const timeout = setTimeout(() => setVisible(false), total);
+        console.log('visible_despues: ', visible)
         return () => clearTimeout(timeout);
         }
     }, [dur, repeatCount]);
@@ -205,9 +139,10 @@ export function Key3Edge({
             {/* Dibuja la línea base */}
             <BaseEdge id={id} path={edgePath} />
             {/* SVG overlay para animar el sobre */}
+            {visible && (
             <svg style={{ overflow: "visible", pointerEvents: "none", position: "absolute" }} width="12" height="12">
                 <g transform={`scale(${scaleEdge})`}>
-                <animateMotion dur={dur} repeatCount={repeatCount} path={edgePath} begin={`${delay}s`} />
+                <animateMotion dur={dur} repeatCount={repeatCount} path={edgePath} begin={`${delay}s`} keyPoints={keyPoints} keyTimes={keyTimes} />
                 {/* El ícono del sobre como <g> */}
                     <g id="layer1" transform="translate(-138.52928,-109.84163)">
                         <g d="g6">
@@ -291,6 +226,86 @@ export function Key3Edge({
                     </g>
                 </g>
             </svg>
+            )}
+        </>
+    );
+}
+
+
+export function MessageEdge({
+    id,
+    sourceX,
+    sourceY,
+    targetX,
+    targetY,
+    sourcePosition,
+    targetPosition,
+    data
+}: EdgeProps) {
+    const [edgePath] = getBezierPath({
+        sourceX,
+        sourceY,
+        sourcePosition,
+        targetX,
+        targetY,
+        targetPosition,
+    });
+    const dur = data?.dur || "2s";
+    const repeatCount = data?.repeatCount || "indefinite";
+    const scaleEdge = data?.scale || 1;
+    const delay = data?.delay || 0;
+    const [visible, setVisible] = useState(true);
+    const keyPoints = data?.keyPoints || "0;1"; // default: toda la trayectoria
+    const keyTimes = data?.keyTimes || "0;1";
+    const vis = data?.vis || 0
+
+    useEffect(() => {
+        if (repeatCount !== "indefinite") {
+        // Oculta después de (dur * repeatCount) segundos
+        const total = vis * 1000;
+        console.log('total_Message: ', total)
+        const timeout = setTimeout(() => setVisible(false), total);
+        return () => clearTimeout(timeout);
+        }
+    }, [dur, repeatCount]);
+
+    return (
+        <>
+            {/* Dibuja la línea base */}
+            <BaseEdge id={id} path={edgePath} />
+            {/* SVG overlay para animar el sobre */}
+            {visible && (
+            <svg style={{ overflow: "visible", pointerEvents: "none", position: "absolute" }} width="12" height="12">
+                <g transform={`scale(${scaleEdge})`}>
+                <animateMotion dur={dur} repeatCount={repeatCount} path={edgePath} begin={`${delay}s`} keyPoints={keyPoints} keyTimes={keyTimes}/>
+                {/* El ícono del sobre como <g> */}
+                <g
+                    id="layer1"
+                    transform="translate(-110.41045,-43.051437)">
+                    <path
+                    style={{fill:"#fdfdfd",fillOpacity:1,stroke:"#000000",strokeWidth:0.215332,strokeLinecap:"butt",strokeLinejoin:"miter",strokeOpacity:1,}}
+                    d="M 110.60486,55.429656 115.8805,76.316877 138.81338,65.7656 137.09072,51.984341 128.15443,62.427952 Z"
+                    />
+                    <path
+                    style={{fill:"#d2ddf7",fillOpacity:1,stroke:"#000000",strokeWidth:0.215332,strokeLinecap:"butt",strokeLinejoin:"miter",strokeOpacity:1}}
+                    d="m 110.60486,55.429658 11.8971,-11.520274 c 1.35462,-1.14272 2.48313,-0.815816 3.55299,-0.107665 l 11.03577,8.182622 -8.93629,10.443613 z"
+                    />
+                    <path
+                    d="m 116.5752,75.726858 -0.94839,-1.464693 10.4205,-13.408646 c 0.81086,-1.024627 1.7235,-1.835147 3.55914,-0.704216 l 8.83125,4.986608 0.0592,0.686787 z"
+                    style={{display:"inline",fill:"none",stroke:"#000000",strokeWidth:0.622598,strokeLinecap:"butt",strokeLinejoin:"miter",strokeMiterlimit:4,strokeDasharray:"none",strokeOpacity:1}}
+                    />
+                    <path
+                    style={{fill:"#d2ddf7",fillOpacity:1,stroke:"#000000",strokeWidth:0.215332,strokeLinecap:"butt",strokeLinejoin:"miter",strokeOpacity:1}}
+                    d="m 115.8805,76.316879 -0.36546,-1.226784 10.84873,-14.293674 c 0.81086,-1.024628 1.72351,-1.835147 3.55914,-0.704216 l 8.83125,4.986608 0.0592,0.686787 z"
+                    />
+                    <path
+                    style={{fill:"#15578b",fillOpacity:1,stroke:"none",strokeWidth:0.0406927,strokeLinecap:"butt",strokeLinejoin:"miter",strokeMiterlimit:4,strokeDasharray:"none",strokeOpacity:1}}
+                    d="m 126.5998,50.441988 v -1.06584 h 1.14198 l -0.26646,4.948542 c 0.16148,0.578166 0.68496,1.319226 1.82716,-0.304525 1.24617,-5.429005 -1.98709,-7.184824 -4.87241,-7.194421 -3.65487,0.302505 -6.99125,5.501172 -1.9033,10.277743 3.37677,2.468328 6.00009,0.528419 7.27056,-0.989707 0.28422,-0.1218 0.47973,-0.14223 0.26646,0.304524 -2.11494,2.442497 -5.97778,3.340514 -8.75511,0.989708 -5.58534,-5.444038 -0.66978,-11.160533 2.81687,-11.229383 6.81746,-0.01883 6.30873,6.84824 5.55759,8.06993 -1.32747,1.994252 -2.80304,1.177499 -3.19753,0.07613 -1.07517,2.861423 -3.55923,1.340672 -3.92077,-0.07613 -0.6924,-2.531166 0.48276,-4.141392 1.78909,-4.758215 1.09005,-0.465148 1.88259,0.06541 2.21971,0.954024 l -0.4901,0.08564 c -0.93089,-1.482839 -1.53705,-0.340501 -1.69741,0.162335 -0.42708,0.953532 -0.63004,3.305175 -0.10768,4.239353 0.76934,0.910553 1.151,0.27045 1.57462,-0.201874 0.84013,-2.016896 0.59333,-3.085176 0.23722,-4.195614 z"
+                    />
+                    </g>
+                </g>
+            </svg>
+            )}
         </>
     );
 }

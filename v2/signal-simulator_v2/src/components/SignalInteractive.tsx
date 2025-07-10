@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import ReactFlow, {Background, Controls, Edge, Node, Position} from "reactflow";
 import {KeyRound as KeyIcon, Mail as MailIcon, Lock as LockIcon, MailOpen as MailOpenIcon,} from "lucide-react";
 import "reactflow/dist/style.css";
-import { AliceNode, BobNode, ServerNode, HKDFNode, ECDHNode, X3DHNode } from './CustomNodes';
+import { AliceNode, BobNode, ServerNode, HKDFNode, ECDHNode, X3DHNode, vacioNode } from './CustomNodes';
 import { KeyEdge, MessageEdge, Key3Edge } from './AnimatedSVGEdge';
 import { PasoInDoc, Paso0Doc, Paso1Doc, Paso2Doc, Paso3Doc} from './Documentacion';
 import '../index.css';
@@ -19,6 +19,7 @@ const nodeTypes = {
   HKDF: HKDFNode,
   ECDH: ECDHNode,
   X3DH: X3DHNode,
+  vacio: vacioNode,
 };
 
 const edgeTypes = {
@@ -172,14 +173,14 @@ const steps: StepSpec[] = [
         source: "alice",
         target: "server",
         type: "animatedKey3",
-        data: { dur: '3.2s', repeatCount:1, scale:0.3, fill: "#17e8b6",}
+        data: { dur: '3.2s', repeatCount:1, scale:0.3, fill: "#17e8b6", vis:3.2}
       },
       {
         id: "b-to-s",
         source: "bob",
         target: "server",
         type: "animatedKey3",
-        data: { dur: '3.2s', repeatCount:1, scale:0.3, fill: "#17c5e8",}
+        data: { dur: '3.2s', repeatCount:1, scale:0.3, fill: "#17c5e8", vis:3.2}
       },
     ],
     makeKeys: (prev) => ({
@@ -233,7 +234,7 @@ const steps: StepSpec[] = [
       },
       {
         id: "X3DH",
-        position: { x: 200, y: 150 },
+        position: { x: 150, y: 150 },
         type: "X3DH",
         data: {
           label: "",
@@ -264,6 +265,8 @@ const steps: StepSpec[] = [
         type: "server",
         data: {
           label: "WhatsApp Server",
+          target: Position.Left,
+          source: Position.Left,
           tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
             </ul>
@@ -272,12 +275,12 @@ const steps: StepSpec[] = [
       },
       {
         id: "HKDF",
-        position: { x: 450, y: 150 },
+        position: { x: 350, y: 150 },
         type: "HKDF",
         data: {
           label: "",
           target: Position.Left,
-          source: Position.Left,
+          source: Position.Right,
           width: 150,
           tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
@@ -296,6 +299,21 @@ const steps: StepSpec[] = [
           )
         },
       },
+      {
+        id: "vacio",
+        position: { x: 510, y: 170 },
+        type: "vacio",
+        data: {
+          label: "",
+          target: Position.Left,
+          source: Position.Left,
+          width: 20,
+          tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
+            </ul>
+          )
+        },
+      },
     ],
     makeEdges: () => [
       {
@@ -303,35 +321,42 @@ const steps: StepSpec[] = [
         source: "server",
         target: "alice",
         type: "animatedKey3",
-        data: { dur: '4s', repeatCount:1, scale:0.3, fill: "#9beb34",}
+        data: { dur: '3s', repeatCount:1, scale:0.3, fill: "#5b9918", vis:3}
       },
       {
         id: "a-to-X3DH",
         source: "alice",
         target: "X3DH",
         type: "animatedKey3",
-        data: { dur: '4s', repeatCount:1, scale:0.3, fill: "#9334eb",delay: 4}
+        data: { dur: '3s', repeatCount:1, scale:0.3, fill: "#9334eb",delay: 3.3, vis:6.3}
       },
       {
         id: "a-to-X3DH1",
         source: "alice",
         target: "X3DH",
         type: "animatedKey3",
-        data: { dur: '4s', repeatCount:1, scale:0.3, fill: "#9beb34",delay: 4.3}
+        data: { dur: '3s', repeatCount:1, scale:0.3, fill: "#5b9918",delay: 3.6, vis:6.6}
       },
       {
         id: "X3DH-to-HKDF",
         source: "X3DH",
         target: "HKDF",
         type: "animatedKey",
-        data: { dur: '3s', repeatCount:1, scale:0.3, fill: "#eb5334",delay: 9}
+        data: { dur: '2s', repeatCount:1, scale:0.4, fill: "#eb5334",delay: 7, vis:9}
       },
       {
         id: "X3DH-to-HKDF1",
         source: "X3DH",
         target: "HKDF",
         type: "animatedKey",
-        data: { dur: '3s', repeatCount:1, scale:0.3, fill: "#eb5334",delay: 9.3}
+        data: { dur: '2s', repeatCount:1, scale:0.4, fill: "#a6540c",delay: 7.3, vis:9.3}
+      },
+      {
+        id: "HKDF-to-vacio",
+        source: "HKDF",
+        target: "vacio",
+        type: "animatedKey",
+        data: { dur: '4s', repeatCount:1, scale:0.5, fill: "#a19c12",delay: 9.5, vis:13.5}
       },
 
     ],
