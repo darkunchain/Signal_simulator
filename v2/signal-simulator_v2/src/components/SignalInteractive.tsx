@@ -3,7 +3,7 @@ import ReactFlow, {Background, Controls, Edge, Node, Position} from "reactflow";
 import {KeyRound as KeyIcon, Mail as MailIcon, Lock as LockIcon, MailOpen as MailOpenIcon,} from "lucide-react";
 import "reactflow/dist/style.css";
 import { AliceNode, BobNode, ServerNode, HKDFNode, ECDHNode, X3DHNode, vacioNode } from './CustomNodes';
-import { KeyEdge, MessageEdge, Key3Edge } from './AnimatedSVGEdge';
+import { KeyEdge, MessageEdge, Key3Edge, BaulEdge } from './AnimatedSVGEdge';
 import { PasoInDoc, Paso0Doc, Paso1Doc, Paso2Doc, Paso3Doc} from './Documentacion';
 import '../index.css';
 import nacl from 'tweetnacl';                   // npm i tweetnacl
@@ -26,6 +26,7 @@ const edgeTypes = {
   animatedKey: KeyEdge,
   animatedMessage: MessageEdge,
   animatedKey3: Key3Edge,
+  animatedBaul: BaulEdge
 
 };
 
@@ -90,7 +91,7 @@ const steps: StepSpec[] = [
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   {
     description:
-      "📌 Paso Inicial: Registro de llaves publicas y privadas de verificacion de identidad",
+      "📌 Fase Inicial: Registro de llaves publicas y privadas de verificacion de identidad",
     documentation: <PasoInDoc />,
     makeNodes: () => [
       {
@@ -192,7 +193,7 @@ const steps: StepSpec[] = [
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   {
     description:
-      "📌 Paso 0: Alice desea enviar el primer mensaje.",
+      "📌 Fase 0: Alice desea enviar el primer mensaje.",
     documentation: <Paso0Doc />,
     makeNodes: () => [
       {
@@ -372,34 +373,163 @@ const steps: StepSpec[] = [
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   {
     description:
-      "✉️ Paso 1: Alice cifra el mensaje (sobre 🔒 aún junto a Alice).",
+      "✉️ Fase 1: Alice cifra el mensaje (sobre 🔒 aún junto a Alice).",
     documentation: <Paso1Doc />,
-    makeNodes: (prev) => {
-      /** añadimos node del sobre */
-      const env: Node = {
-        id: "env1",
-        position: { x: 60, y: 50 },
-        data: { label: <MailIcon /> },
-        draggable: false,
-        type: "default",
-      };
-      return [...prev, env];
-    },
+    makeNodes: () => [
+      {
+        id: "alice",
+        position: { x: 0, y: 150 },
+        type: "alice",
+        data: {
+          label: "Alice",
+          target: Position.Top,
+          source: Position.Top,
+          tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
+                <span style={{ color: "green" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Identity key publica de Bob IK_B
+                <br></br>
+                <span style={{ color: "green" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Signed PreKey publica de Bob SPK_B
+                <br></br>
+                <span style={{ color: "green" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                OneTime PreKey publica de Bob OPK_B
+                <br /><br />
+                <span style={{ color: "tomato" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Identity key publica de Alice IK_A
+                <br></br>
+                <span style={{ color: "tomato" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Llave Efimera de Alice EK_A
+                <br></br>
+            </ul>
+          )
+        },
+      },
+      {
+        id: "server",
+        position: { x: 210, y: 0 },
+        type: "server",
+        data: {
+          label: "WhatsApp Server",
+          target: Position.Left,
+          source: Position.Right,
+          tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
+            </ul>
+          )
+        },
+      },
+      {
+        id: "bob",
+        position: { x: 420, y: 150 },
+        type: "bob",
+        data: {
+          label: "Bob",
+          tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
+                <span style={{ color: "violet" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Identity key de Bob IK_B_priv
+                <br></br>
+                <span style={{ color: "violet" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Signed PreKey de Bob SPK_B_priv
+            </ul>
+          )
+        },
+      },
+      {
+        id: "HKDF",
+        position: { x: -250, y: 150 },
+        type: "HKDF",
+        data: {
+          label: "",
+          target: Position.Right,
+          source: Position.Top,
+          width: 150,
+          tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
+                Concatena los resultados <strong>(DH1 || DH2 || DH3 || DH4)</strong> y aplica un KDF <em>(función de derivación de claves, como HKDF).</em><br />
+                <br></br>
+                <span style={{ color: "Tomato" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                <strong>Root Key:</strong> Clave maestra para la sesión.
+                <br></br>
+                <span style={{ color: "violet" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                <strong>Chain Key:</strong> Clave inicial para derivar Message Keys (usadas por mensaje)
+            </ul>
+          )
+        },
+      },
+      {
+        id: "vacio",
+        position: { x: -290, y: 140 },
+        type: "vacio",
+        data: {
+          label: "",
+          target: Position.Right,
+          source: Position.Right,
+          width: 20,
+          tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
+            </ul>
+          )
+        },
+      },
+      
+    ],
     makeEdges: () => [
       {
-        id: "a-to-b-1",
-        source: "env1",
-        target: "env1",
+        id: "a-to-HKDF",
+        source: "alice",
+        target: "HKDF",
         type: "animatedKey",
-        data: { dur: '1.2s', repeatCount:3, scale:0.3}
+        data: { dur: '3s', repeatCount:1, scale:0.4, fill: "#560e75", vis:3}
       },
       {
-        id: "a-to-server-1",
+        id: "a-to-HKDF1",
+        source: "alice",
+        target: "HKDF",
+        type: "animatedMessage",
+        data: { dur: '3s', repeatCount:1, scale:1, fill: "#560e75",delay: 0.5, vis:3.5}
+      },
+      {
+        id: "HKDF-to-vacio",
+        source: "HKDF",
+        target: "vacio",
+        type: "animatedBaul",
+        data: { dur: '3s', repeatCount:1, scale:0.2, fill: "#9334eb",delay: 3.5, vis:6.5}
+      },
+      {
+        id: "a-to-Server",
         source: "alice",
         target: "server",
-        type: "animatedMessage",
-        data: { dur: '1.2s', repeatCount:3, scale:0.3}
+        type: "animatedBaul",
+        data: { dur: '4s', repeatCount:1, scale:0.2, fill: "#5b9918",delay: 6.5, vis:10.5}
       },
+      {
+        id: "server-to-B",
+        source: "server",
+        target: "bob",
+        type: "animatedBaul",
+        data: { dur: '4s', repeatCount:1, scale:0.2, fill: "#eb5334",delay: 10.5, vis:14.5}
+      },
+            
     ],
     makeKeys: (prev) => {
       const MK1 = hkdfSyncDemo(prev.CKs0, "MK1"); // string hex de 64 chars
@@ -414,11 +544,12 @@ const steps: StepSpec[] = [
       const wire = new Uint8Array(nonce.length + cipherTag.length);
       wire.set(nonce, 0);
       wire.set(cipherTag, nonce.length);
-      const wireHex  = Array.from(wire).map(b => b.toString(16).padStart(2, '0')).join('');
-      const wireB64  = encodeBase64(wire);
-      return { ...prev, MK1, CKs1, wireHex, wireB64,
+      const textHex  = Array.from(wire).map(b => b.toString(16).padStart(2, '0')).join('');
+      const textB64  = encodeBase64(wire);
+      return { ...prev, MK1, CKs1,
         nonce: Array.from(nonce).map(b => b.toString(16).padStart(2, '0')).join(''),
-        plaintext: Array.from(plaintext).map(b => b.toString(16).padStart(2, '0')).join(''),
+        plaintext: " Hola, Bob",
+        textHex, textB64
       };
     },
   },
@@ -509,11 +640,11 @@ export default function SignalInteractive() {
   const keyList = useMemo(
     () =>
       Object.entries(keys).map(([k, v]) => (
-        <li key={k} className="flex gap-1 items-start text-xs break-all">
+        <div key={k} className="flex gap-1 items-start text-xs break-all">
           <KeyIcon className="w-3 h-3 mt-0.5" />
-          <span className="font-medium">{k}:</span>
+          <span className="font-medium"><strong> {k}: </strong></span>
           <code>{v}</code>
-        </li>
+        </div>
       )),
     [keys]
   );
@@ -522,7 +653,7 @@ export default function SignalInteractive() {
     <div className="h-screen p-4 grid grid-cols-3 gap-4 text-sm">
       {/* Flow */}
       <div
-        className="col-span-2 relative border rounded-2xl shadow overflow-hidden"
+        className="col-span-4 relative border rounded-2xl shadow overflow-hidden"
         style={{ height: "40vh" /* garantiza altura explícita */ }}
       >
         <ReactFlow
@@ -563,9 +694,9 @@ export default function SignalInteractive() {
           minHeight: "180px"
         }}>
           <div style={{ flex: 1 }} className="border rounded-2xl shadow p-4 overflow-y-auto">
-            <h1 className="mb-4 font-medium leading-relaxed whitespace-pre-wrap">
+            <h2 className="mb-4 font-medium leading-relaxed whitespace-pre-wrap">
               {steps[stepIdx].description}
-            </h1>
+            </h2>
             <p className="space-y-1 list-none pb-12">{keyList}</p>
           </div>
           <div
