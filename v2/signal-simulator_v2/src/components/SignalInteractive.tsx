@@ -4,7 +4,7 @@ import {KeyRound as KeyIcon, Mail as MailIcon, Lock as LockIcon, MailOpen as Mai
 import "reactflow/dist/style.css";
 import { AliceNode, BobNode, ServerNode, HKDFNode, ECDHNode, X3DHNode, vacioNode } from './CustomNodes';
 import { KeyEdge, MessageEdge, Key3Edge, BaulEdge } from './AnimatedSVGEdge';
-import { PasoInDoc, Paso0Doc, Paso1Doc, Paso2Doc, Paso3Doc} from './Documentacion';
+import { PasoInDoc, Paso1Doc, Paso2Doc, Paso3Doc, Paso4Doc,Paso5Doc} from './Documentacion';
 import '../index.css';
 import nacl from 'tweetnacl';                   // npm i tweetnacl
 import { encodeBase64 } from 'tweetnacl-util';  // npm i tweetnacl-util
@@ -27,8 +27,9 @@ const edgeTypes = {
   animatedMessage: MessageEdge,
   animatedKey3: Key3Edge,
   animatedBaul: BaulEdge
-
 };
+
+
 
 
 function hexToBytes(hex: string) {
@@ -189,12 +190,12 @@ const steps: StepSpec[] = [
     }),
   },
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-              /** Paso 0 Alice quiere enviar el primer mensaje */
+              /** Paso 1 Alice quiere enviar el primer mensaje */
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   {
     description:
       "📌 Fase 0: Alice desea enviar el primer mensaje.",
-    documentation: <Paso0Doc />,
+    documentation: <Paso1Doc />,
     makeNodes: () => [
       {
         id: "alice",
@@ -369,12 +370,139 @@ const steps: StepSpec[] = [
     }),
   },
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-              /** Paso 1 Cifrado del mensaje */
+              /** Paso 2 Llaves Root Key y Chain Key */
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   {
     description:
-      "✉️ Fase 1: Alice cifra el mensaje (sobre 🔒 aún junto a Alice).",
-    documentation: <Paso1Doc />,
+      "✉️ Paso 2: Claves RootKey y ChainKey 🔑.",
+    documentation: <Paso2Doc />,
+    makeNodes: () => [
+      {
+        id: "alice",
+        position: { x: 0, y: 150 },
+        type: "alice",
+        data: {
+          label: "Alice",
+          target: Position.Top,
+          source: Position.Right,
+          tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
+                <span style={{ color: "green" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Identity key publica de Bob IK_B
+                <br></br>
+                <span style={{ color: "green" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Signed PreKey publica de Bob SPK_B
+                <br></br>
+                <span style={{ color: "green" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                OneTime PreKey publica de Bob OPK_B
+                <br /><br />
+                <span style={{ color: "tomato" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Identity key publica de Alice IK_A
+                <br></br>
+                <span style={{ color: "tomato" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Llave Efimera de Alice EK_A
+                <br></br>
+            </ul>
+          )
+        },
+      },
+      {
+        id: "server",
+        position: { x: 210, y: 0 },
+        type: "server",
+        data: {
+          label: "WhatsApp Server",
+          target: Position.Left,
+          source: Position.Right,
+          tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
+            </ul>
+          )
+        },
+      },
+      {
+        id: "bob",
+        position: { x: 420, y: 150 },
+        type: "bob",
+        data: {
+          label: "Bob",
+          tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
+            </ul>
+          )
+        },
+      },
+      {
+        id: "vacio",
+        position: { x: 60, y: 180 },
+        type: "vacio",
+        data: {
+          label: "",
+          target: Position.Left,
+          source: Position.Left,
+          width: 20,
+          tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
+            </ul>
+          )
+        },
+      },
+    ],
+    makeEdges: () => [
+      {
+        id: "a-to-vacio",
+        source: "alice",
+        target: "vacio",
+        type: "animatedKey",
+        data: { dur: '3s', repeatCount:1, scale:0.4, fill: "#560e75", vis:3}
+      },
+      {
+        id: "a-to-vacio",
+        source: "alice",
+        target: "vacio",
+        type: "animatedMessage",
+        data: { dur: '3s', repeatCount:1, scale:1, fill: "#560e75",delay: 0.5, vis:3.5}
+      },
+    ],
+    makeKeys: (prev) => {
+      const MK1 = hkdfSyncDemo(prev.CKs0, "MK1"); // string hex de 64 chars
+      const mk1Bytes = hexToBytes(MK1); // Uint8Array de 32 bytes
+      const CKs1 = hkdfSyncDemo(prev.CKs0, "CKs1");
+      const CKs1Bytes = hexToBytes(CKs1);
+      const mk1Uint8 = hexToBytes(MK1);    // ← Uint8Array de 32 bytes
+      console.log("Longitud de la clave:", mk1Uint8.length);
+      const nonce = nacl.randomBytes(nacl.secretbox.nonceLength);
+      const plaintext = new TextEncoder().encode('Hola Bob');
+      const cipherTag = nacl.secretbox(plaintext, nonce, mk1Uint8);
+      const wire = new Uint8Array(nonce.length + cipherTag.length);
+      wire.set(nonce, 0);
+      wire.set(cipherTag, nonce.length);
+      const textHex  = Array.from(wire).map(b => b.toString(16).padStart(2, '0')).join('');
+      const textB64  = encodeBase64(wire);
+      return { ...prev, MK1, CKs1,
+        nonce: Array.from(nonce).map(b => b.toString(16).padStart(2, '0')).join(''),
+        plaintext: " Hola, Bob",
+        textHex, textB64
+      };
+    },
+  },
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+              /** Paso 3 Cifrado del mensaje */
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  {
+    description:
+      "✉️ Fase 1: Alice cifra el mensaje 🔒.",
+    documentation: <Paso3Doc />,
     makeNodes: () => [
       {
         id: "alice",
@@ -491,7 +619,6 @@ const steps: StepSpec[] = [
           )
         },
       },
-      
     ],
     makeEdges: () => [
       {
@@ -529,7 +656,6 @@ const steps: StepSpec[] = [
         type: "animatedBaul",
         data: { dur: '4s', repeatCount:1, scale:0.2, fill: "#eb5334",delay: 10.5, vis:14.5}
       },
-            
     ],
     makeKeys: (prev) => {
       const MK1 = hkdfSyncDemo(prev.CKs0, "MK1"); // string hex de 64 chars
@@ -554,22 +680,129 @@ const steps: StepSpec[] = [
     },
   },
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-              /** Paso 2 Alice quiere enviar el primer mensaje */
+              /** Paso 4 Alice quiere enviar el primer mensaje */
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   {
     description:
       "🚚 Paso 2: El mensaje cifrado viaja — sobre se muestra con candado en tránsito.",
-    documentation: <Paso2Doc />,
-    makeNodes: (prev) =>
-      prev.map((n) =>
-        n.id === "env1"
-          ? {
-              ...n,
-              position: { x: 210, y: 50 },
-              data: { label: <LockIcon /> },
-            }
-          : n
-      ),
+    documentation: <Paso4Doc />,
+    makeNodes: () => [
+      {
+        id: "alice",
+        position: { x: 0, y: 150 },
+        type: "alice",
+        data: {
+          label: "Alice",
+          target: Position.Top,
+          source: Position.Top,
+          tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
+                <span style={{ color: "green" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Identity key publica de Bob IK_B
+                <br></br>
+                <span style={{ color: "green" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Signed PreKey publica de Bob SPK_B
+                <br></br>
+                <span style={{ color: "green" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                OneTime PreKey publica de Bob OPK_B
+                <br /><br />
+                <span style={{ color: "tomato" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Identity key publica de Alice IK_A
+                <br></br>
+                <span style={{ color: "tomato" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Llave Efimera de Alice EK_A
+                <br></br>
+            </ul>
+          )
+        },
+      },
+      {
+        id: "server",
+        position: { x: 210, y: 0 },
+        type: "server",
+        data: {
+          label: "WhatsApp Server",
+          target: Position.Left,
+          source: Position.Right,
+          tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
+            </ul>
+          )
+        },
+      },
+      {
+        id: "bob",
+        position: { x: 420, y: 150 },
+        type: "bob",
+        data: {
+          label: "Bob",
+          tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
+                <span style={{ color: "violet" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Identity key de Bob IK_B_priv
+                <br></br>
+                <span style={{ color: "violet" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                Signed PreKey de Bob SPK_B_priv
+            </ul>
+          )
+        },
+      },
+      {
+        id: "HKDF",
+        position: { x: -250, y: 150 },
+        type: "HKDF",
+        data: {
+          label: "",
+          target: Position.Right,
+          source: Position.Top,
+          width: 150,
+          tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
+                Concatena los resultados <strong>(DH1 || DH2 || DH3 || DH4)</strong> y aplica un KDF <em>(función de derivación de claves, como HKDF).</em><br />
+                <br></br>
+                <span style={{ color: "Tomato" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                <strong>Root Key:</strong> Clave maestra para la sesión.
+                <br></br>
+                <span style={{ color: "violet" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                <strong>Chain Key:</strong> Clave inicial para derivar Message Keys (usadas por mensaje)
+            </ul>
+          )
+        },
+      },
+      {
+        id: "vacio",
+        position: { x: -290, y: 140 },
+        type: "vacio",
+        data: {
+          label: "",
+          target: Position.Right,
+          source: Position.Right,
+          width: 20,
+          tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
+            </ul>
+          )
+        },
+      },
+    ],
       makeEdges: () => [
       {
         id: "a-to-b-2",
@@ -582,12 +815,12 @@ const steps: StepSpec[] = [
     makeKeys: (prev) => prev,
   },
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-              /** Paso 3 Alice quiere enviar el primer mensaje */
+              /** Paso 5 Alice quiere enviar el primer mensaje */
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   {
     description:
       "📬 Paso 3: Bob descifra con MK₁ y avanza CKᵣ — el sobre abierto llega a Bob.",
-    documentation: <Paso3Doc />,
+    documentation: <Paso5Doc />,
     makeNodes: (prev) =>
       prev.map((n) =>
         n.id === "env1"
@@ -637,6 +870,16 @@ export default function SignalInteractive() {
     }
   };
 
+  const prev = () => {
+    if (stepIdx > 0) {
+      const n = stepIdx - 1;
+      setStepIdx(n);
+      setNodes((prev) => steps[n].makeNodes(prev));
+      setKeys((prev) => steps[n].makeKeys(prev));
+      setEdges((prev) => steps[n].makeEdges?.(prev) || []);
+    }
+  };
+
   const keyList = useMemo(
     () =>
       Object.entries(keys).map(([k, v]) => (
@@ -667,19 +910,7 @@ export default function SignalInteractive() {
           <Background />
           <Controls />
         </ReactFlow>
-        <button
-          onClick={next}
-          disabled={stepIdx >= steps.length - 1}
-          className="rounded disabled:opacity-40"
-        >
-          <a className="button">
-          <em> </em>
-            <span>
-              Siguiente paso
-            </span>
-          </a>
-        </button>
-        <br/><br/>
+
 
       </div>
       {/* Panel */}
@@ -698,6 +929,35 @@ export default function SignalInteractive() {
               {steps[stepIdx].description}
             </h2>
             <p className="space-y-1 list-none pb-12">{keyList}</p>
+
+                    <div
+                      style={{
+                        position: "sticky",
+                        bottom: 16,
+                        left: 16,
+                        display: "flex",
+                        gap: 8
+                      }}
+                    >
+                      <button
+                        onClick={prev}
+                        disabled={stepIdx === 0}
+                        className="rounded disabled:opacity-40"
+                      >
+                        <a className="button">
+                          <span>PAso Anterior</span>
+                        </a>
+                      </button>
+                      <button
+                        onClick={next}
+                        disabled={stepIdx >= steps.length - 1}
+                        className="rounded disabled:opacity-40"
+                      >
+                        <a className="button">
+                          <span>Siguiente paso</span>
+                        </a>
+                      </button>
+                    </div>
           </div>
           <div
             style={{ flex: 1,
