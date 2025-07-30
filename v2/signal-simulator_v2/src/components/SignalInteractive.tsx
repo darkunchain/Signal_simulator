@@ -383,34 +383,18 @@ const steps: StepSpec[] = [
         type: "alice",
         data: {
           label: "Alice",
-          target: Position.Top,
           source: Position.Right,
           tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
                 <span style={{ color: "green" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
-                Identity key publica de Bob IK_B
+                RootKey (RK0)
                 <br></br>
-                <span style={{ color: "green" }}>
+                <span style={{ color: "purple" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
-                Signed PreKey publica de Bob SPK_B
-                <br></br>
-                <span style={{ color: "green" }}>
-                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                </span>
-                OneTime PreKey publica de Bob OPK_B
-                <br /><br />
-                <span style={{ color: "tomato" }}>
-                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                </span>
-                Identity key publica de Alice IK_A
-                <br></br>
-                <span style={{ color: "tomato" }}>
-                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                </span>
-                Llave Efimera de Alice EK_A
+                ChainKey (CK0)
                 <br></br>
             </ul>
           )
@@ -422,8 +406,6 @@ const steps: StepSpec[] = [
         type: "server",
         data: {
           label: "WhatsApp Server",
-          target: Position.Left,
-          source: Position.Right,
           tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
             </ul>
@@ -444,12 +426,10 @@ const steps: StepSpec[] = [
       },
       {
         id: "vacio",
-        position: { x: 60, y: 180 },
+        position: { x: 40, y: 170 },
         type: "vacio",
         data: {
           label: "",
-          target: Position.Left,
-          source: Position.Left,
           width: 20,
           tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
@@ -464,35 +444,18 @@ const steps: StepSpec[] = [
         source: "alice",
         target: "vacio",
         type: "animatedKey",
-        data: { dur: '3s', repeatCount:1, scale:0.4, fill: "#560e75", vis:3}
+        data: { dur: '10s', repeatCount:1, scale:0.4, fill: "#560e75", vis:10}
       },
       {
         id: "a-to-vacio",
         source: "alice",
         target: "vacio",
-        type: "animatedMessage",
-        data: { dur: '3s', repeatCount:1, scale:1, fill: "#560e75",delay: 0.5, vis:3.5}
+        type: "animatedKey",
+        data: { dur: '10s', repeatCount:1, scale:0.4, fill: "#18660eff",delay: 1, vis:11}
       },
     ],
     makeKeys: (prev) => {
-      const MK1 = hkdfSyncDemo(prev.CKs0, "MK1"); // string hex de 64 chars
-      const mk1Bytes = hexToBytes(MK1); // Uint8Array de 32 bytes
-      const CKs1 = hkdfSyncDemo(prev.CKs0, "CKs1");
-      const CKs1Bytes = hexToBytes(CKs1);
-      const mk1Uint8 = hexToBytes(MK1);    // ← Uint8Array de 32 bytes
-      console.log("Longitud de la clave:", mk1Uint8.length);
-      const nonce = nacl.randomBytes(nacl.secretbox.nonceLength);
-      const plaintext = new TextEncoder().encode('Hola Bob');
-      const cipherTag = nacl.secretbox(plaintext, nonce, mk1Uint8);
-      const wire = new Uint8Array(nonce.length + cipherTag.length);
-      wire.set(nonce, 0);
-      wire.set(cipherTag, nonce.length);
-      const textHex  = Array.from(wire).map(b => b.toString(16).padStart(2, '0')).join('');
-      const textB64  = encodeBase64(wire);
-      return { ...prev, MK1, CKs1,
-        nonce: Array.from(nonce).map(b => b.toString(16).padStart(2, '0')).join(''),
-        plaintext: " Hola, Bob",
-        textHex, textB64
+      return { ...prev
       };
     },
   },

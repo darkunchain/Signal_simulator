@@ -319,14 +319,17 @@ export const Paso2Doc: React.FC = () => (
 export const Paso3Doc: React.FC = () => (
     <div>
       <h2><strong>1. Estado después de X3DH y HKDF</strong></h2>
+      <ul>
       <p>Tras ejecutar&nbsp;<strong>X3DH</strong>, Alice y Bob tienen:</p>
       <ul>
       <li><strong><code>Root Key</code>&nbsp;(RK)</strong>: Clave maestra derivada del intercambio DH.</li>
       <li><strong><code>Chain Key</code>&nbsp;(CK)</strong>: Clave para derivar&nbsp;<code>Message Keys</code>&nbsp;(una por mensaje).</li>
       </ul>
       <p>Alice quiere enviar&nbsp;<strong>"Hola Bob"</strong>.</p>
+      </ul>
       <hr />
       <h2><strong>2. Cifrado del mensaje (Double Ratchet)</strong></h2>
+      <ul>
       <h3><strong>Paso 1: Derivar la Message Key</strong><strong data-start="401" data-end="422">&nbsp;(MKₙ)</strong> y la siguiente Chain Key</h3>
       <ol data-start="449" data-end="921">
       <li data-start="449" data-end="488">
@@ -405,7 +408,7 @@ export const Paso3Doc: React.FC = () => (
       </tr>
       <tr data-start="1818" data-end="1930">
       <td style={{width: "132.766px", border: "1px solid #333"}} data-start="1818" data-end="1846" data-col-size="sm"><code data-start="1820" data-end="1827">nonce</code></td>
-      <td style={{width: "257.234px", border: "1px solid #333"}} data-col-size="md" data-start="1846" data-end="1907">24 B generados arriba</td>
+      <td style={{width: "257.234px", border: "1px solid #333"}} data-col-size="md" data-start="1846" data-end="1907">24Bytes generados arriba</td>
       <td style={{width: "198px", border: "1px solid #333"}} data-col-size="sm" data-start="1907" data-end="1930">Necesario para AEAD</td>
       </tr>
       <tr data-start="1931" data-end="2051">
@@ -424,29 +427,30 @@ export const Paso3Doc: React.FC = () => (
       <div className="contain-inline-size rounded-2xl relative bg-token-sidebar-surface-primary">
       <div className="flex items-center text-token-text-secondary px-4 py-2 text-xs font-sans justify-between h-9 bg-token-sidebar-surface-primary select-none rounded-t-2xl">&nbsp;</div>
       <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">ciphertext, tag = XChaCha20-Poly1305( </code></div>
-      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">&nbsp; &nbsp;key = MKₙ, # 32 B </code></div>
-      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">&nbsp; &nbsp;nonce = nonce, # 24 B</code></div>
+      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">&nbsp; &nbsp;key = MKₙ, # 32Bytes </code></div>
+      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">&nbsp; &nbsp;nonce = nonce, # 24Bytes</code></div>
       <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">&nbsp; &nbsp;plaintext = "Hola Bob", # variable</code></div>
       <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">&nbsp; &nbsp;ad = headerBytes # encabezado completo</code></div>
       <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">)</code></div>
       </div>
       <ul data-start="2389" data-end="2515">
-      <li data-start="2389" data-end="2481"><strong data-start="2391" data-end="2405">Ciphertext</strong> = mismo tama&ntilde;o que el mensaje (8 B aquí, tras padding interno de stream).</li>
-      <li data-start="2482" data-end="2515"><strong data-start="2484" data-end="2491">Tag</strong> = 16 B Poly1305.</li>
+      <li data-start="2389" data-end="2481"><strong data-start="2391" data-end="2405">Ciphertext</strong> = mismo tama&ntilde;o que el mensaje (8Bytes aquí, tras padding interno de stream).</li>
+      <li data-start="2482" data-end="2515"><strong data-start="2484" data-end="2491">Tag</strong> = 16Bytes Poly1305.</li>
       </ul>
       <hr data-start="2517" data-end="2520" />
       <h3><strong>Paso 5:&nbsp;</strong>Paquete final enviado</h3>
       <div className="contain-inline-size rounded-2xl relative bg-token-sidebar-surface-primary">
       <div className="flex items-center text-token-text-secondary px-4 py-2 text-xs font-sans justify-between h-9 bg-token-sidebar-surface-primary select-none rounded-t-2xl">&nbsp;</div>
       <div className="sticky top-9">&nbsp;</div>
-      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">┌── <span className="hljs-selector-tag">header</span> ─────────────────────────────────────────┐ </code></div>
-      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">│&nbsp; &nbsp; &nbsp; &nbsp;DH_pub_A (<span className="hljs-number">32</span> <span className="hljs-selector-tag">B</span>) │ pn │ n │ nonce (<span className="hljs-number">24</span> <span className="hljs-selector-tag">B</span>) │ &hellip; │ └───────────────────────────────────────────────────┘ </code></div>
+      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">┌── <span className="hljs-selector-tag">header</span> ───────────────────────────────────────────────┐ </code></div>
+      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">│&nbsp; &nbsp; &nbsp; &nbsp;DH_pub_A (<span className="hljs-number">32</span>Bytes) │ pn │ n │ nonce (<span className="hljs-number">24</span>Bytes) │ &hellip; │ └─────────────────────────────────────────────────────────┘ </code></div>
       <div className="overflow-y-auto p-4" dir="ltr">&nbsp;</div>
-      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">┌── <span className="hljs-selector-tag">body</span> ───────────────────────────────────────────┐</code></div>
-      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">│&nbsp; &nbsp; &nbsp; &nbsp;ciphertext │ tag (<span className="hljs-number">16</span> <span className="hljs-selector-tag">B</span>)&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;│ </code></div>
-      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">└───────────────────────────────────────────────────┘ </code></div>
+      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">┌── <span className="hljs-selector-tag">body</span> ──────────────────────────────────────────────┐</code></div>
+      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">│&nbsp; &nbsp; &nbsp; &nbsp;ciphertext │ tag (<span className="hljs-number">16</span>Bytes)&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;│ </code></div>
+      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">└──────────────────────────────────────────────────────┘ </code></div>
       </div>
-      <p data-start="2884" data-end="3022"><strong data-start="2884" data-end="2909">Total para "Hola Bob"</strong> (8 B) &rArr;<br data-start="2917" data-end="2920" /> <code data-start="2920" data-end="2984">32 B DH + 8 B nums + 24 B nonce + 8 B ct + 16 B tag &asymp; 88 bytes</code> (aprox.; pn/n codificados en varint).</p>
+      <p data-start="2884" data-end="3022"><strong data-start="2884" data-end="2909">Total para "Hola Bob"</strong> (8 B) &rArr;<br data-start="2917" data-end="2920" /> <code data-start="2920" data-end="2984">32Bytes DH + 8Bytes nums + 24Bytes nonce + 8Bytes cipherText + 16Bytes tag &asymp; 88 bytes</code> (aprox.; pn/n codificados en varint).</p>
+      </ul>
     </div>
 );
 
