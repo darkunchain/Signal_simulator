@@ -3,6 +3,7 @@ import React from "react";
 export const PasoInDoc: React.FC = () => (
   <div>
     <h1><strong>1. Identity Key (Clave de Identidad)</strong></h1>
+    <ul>
     <h2><strong>¿Qué es?</strong></h2>
     <ul>
     <li>
@@ -16,8 +17,8 @@ export const PasoInDoc: React.FC = () => (
     </li>
     </ul>
     <h2><strong>Generación y almacenamiento</strong></h2>
-    <ol start={1}>
-    <li><strong>Creación</strong>:
+    <ul>
+    <li><h3><strong>Creación</strong>:</h3>
     <ul>
     <li>
     <p className="ds-markdown-paragraph">Se genera un par de claves&nbsp;<strong>(clave privada + clave pública)</strong>&nbsp;al instalar la app (ej.: WhatsApp).</p>
@@ -31,7 +32,7 @@ export const PasoInDoc: React.FC = () => (
     </ul>
     </li>
     <li>
-    <p className="ds-markdown-paragraph"><strong>Uso</strong>:</p>
+    <h3 className="ds-markdown-paragraph"><strong>Uso</strong>:</h3>
     <ul>
     <li>
     <p className="ds-markdown-paragraph">Se usa en&nbsp;<strong>X3DH</strong>&nbsp;para autenticar al usuario y derivar claves compartidas.</p>
@@ -41,7 +42,7 @@ export const PasoInDoc: React.FC = () => (
     </li>
     </ul>
     </li>
-    </ol>
+    </ul>
     <h2><strong>¿Cuándo cambia?</strong></h2>
     <ul>
     <li>
@@ -51,14 +52,15 @@ export const PasoInDoc: React.FC = () => (
     <p className="ds-markdown-paragraph">El usuario reinstale la app o borre datos.</p>
     </li>
     <li>
-    <p className="ds-markdown-paragraph">&nbsp;</p>
-    <p className="ds-markdown-paragraph">Hay una&nbsp;<strong>compromiso de seguridad</strong>&nbsp;(ej.: robo del dispositivo).</p>
+    <p className="ds-markdown-paragraph">Hay un&nbsp;<strong>compromiso de seguridad</strong>&nbsp;(ej.: robo del dispositivo).</p>
     </li>
     </ul>
     </li>
+    </ul>
     </ul>
     <hr />
     <h1><strong>2. Signed PreKey (Clave Prefirmada)</strong></h1>
+    <ul>
     <h2><strong>¿Qué es?</strong></h2>
     <ul>
     <li>
@@ -72,9 +74,9 @@ export const PasoInDoc: React.FC = () => (
     </li>
     </ul>
     <h2><strong>Generación y almacenamiento</strong></h2>
-    <ol start={1}>
+    <ul>
     <li>
-    <p className="ds-markdown-paragraph"><strong>Creación</strong>:</p>
+    <h3 className="ds-markdown-paragraph"><strong>Creación</strong>:</h3>
     <ul>
     <li>
     <p className="ds-markdown-paragraph">El dispositivo genera un nuevo par de claves&nbsp;<strong>(Signed PreKey privada + pública)</strong>&nbsp;periódicamente (ej.: cada 1-7 días).</p>
@@ -88,7 +90,7 @@ export const PasoInDoc: React.FC = () => (
     </ul>
     </li>
     <li>
-    <p className="ds-markdown-paragraph"><strong>Uso</strong>:</p>
+    <h3 className="ds-markdown-paragraph"><strong>Uso</strong>:</h3>
     <ul>
     <li>
     <p className="ds-markdown-paragraph">Cuando alguien quiere enviar un mensaje, el servidor proporciona al emisor la&nbsp;<strong>Signed PreKey pública</strong>&nbsp;del receptor.</p>
@@ -98,7 +100,7 @@ export const PasoInDoc: React.FC = () => (
     </li>
     </ul>
     </li>
-    </ol>
+    </ul>
     <h2><strong>¿Cuándo cambia?</strong></h2>
     <ul>
     <li>
@@ -124,19 +126,21 @@ export const PasoInDoc: React.FC = () => (
     </ul>
     </li>
     </ul>
+    </ul>
   </div>
 );
 
 
 export const Paso1Doc: React.FC = () => (
   <div>
-    <p>Cuando&nbsp;<strong>Alice</strong>&nbsp;quiere enviar un mensaje a&nbsp;<strong>Bob</strong>&nbsp;por primera vez (o después de una rotación de claves), WhatsApp/Signal sigue un protocolo detallado para establecer una sesión segura usando&nbsp;<strong>X3DH</strong>&nbsp;y&nbsp;<strong>Double Ratchet</strong>. Aquí está el desglose paso a paso:</p>
-    <hr />
+    <p>Cuando&nbsp;<strong>Alice</strong>&nbsp;quiere enviar un mensaje a&nbsp;<strong>Bob</strong>&nbsp;por primera vez (o después de una rotación de claves), WhatsApp <strong>sigue un protocolo detallado para establecer una sesión segura usando X3DH y Double Ratchet</strong>. Aquí está el desglose paso a paso:</p>
+    <hr />    
     <h1><strong>1. Intercambio Inicial de Claves (X3DH)</strong></h1>
+    <ul>
     <p>Antes de cifrar el mensaje, Alice necesita obtener las claves públicas de Bob y derivar una&nbsp;<strong>clave compartida</strong>. El servidor de WhatsApp actúa como intermediario para este intercambio:</p>
     <h2><strong>Claves que el servidor envía a Alice:</strong></h2>
+    <ul>
     <p className="ds-markdown-paragraph">Cuando Alice inicia una conversación con Bob, el servidor le proporciona:</p>
-    <ol start={1}>
     <li>
     <h3 className="ds-markdown-paragraph"><strong>Identity Key pública de Bob (IK_B)</strong></h3>
     <ul>
@@ -151,46 +155,60 @@ export const Paso1Doc: React.FC = () => (
     <li>
     <p className="ds-markdown-paragraph">Clave de medio plazo firmada por la Identity Key de Bob (para garantizar autenticidad).</p>
     </li>
+    <li>
+    <p className="ds-markdown-paragraph">Permite establecer sesiones sin necesidad de que Bob esté en línea.</p>
+    </li>
     </ul>
     </li>
     <li>
     <h3 className="ds-markdown-paragraph"><strong>(Opcional) One-Time PreKey de Bob (OPK_B)</strong></h3>
     <ul>
     <li>
-    <p className="ds-markdown-paragraph">Clave efímera pregenerada por Bob (si está disponible, a&ntilde;ade seguridad adicional).</p>
+    <p className="ds-markdown-paragraph">Clave efímera pregenerada por Bob (si está disponible, añade seguridad adicional).</p>
+    </li>
+    <li>
+    <p className="ds-markdown-paragraph">La OPKB se usa para añadir una capa adicional de seguridad <strong>(protección contra replay attacks y forward secrecy)</strong>.</p>
+    </li>
+    <li>
+    <p className="ds-markdown-paragraph">WhatsApp genera   un lote de OPKB (ej.: 100 claves) durante el registro o periodicamente.</p>
+    </li>
+    <li>
+    <p className="ds-markdown-paragraph">Cada vez que alguien inicia una sesión con Bob usando una OPKB, esta clave se elimina del servidor (no se reutiliza).</p>
     </li>
     </ul>
     </li>
-    </ol>
+    </ul>
+    </ul>
     <hr />
-    <h2><strong>Proceso de Alice para crear las claves de cifrado:</strong></h2>
+    <h1><strong>2. Proceso de Alice para crear las claves de cifrado:</strong></h1>
     <p className="ds-markdown-paragraph">Alice usa estas claves para calcular una&nbsp;<strong>clave compartida (Root Key)</strong>&nbsp;mediante&nbsp;<strong>X3DH</strong>:</p>
-    <ol start={1}>
-    <li><h3><strong>Genera sus propias claves efímeras:</strong></h3>
+    <ul>
+    
+    <h2><strong>1. Genera sus propias claves efímeras:</strong></h2>
     <ul>
     <li>
     <p className="ds-markdown-paragraph">Alice crea una&nbsp;<strong>clave efímera (EK_A)</strong>&nbsp;(usada solo para esta sesión).</p>
     </li>
     </ul>
-    </li>
-    <li><h3><strong>Calcula 4 intercambios Diffie-Hellman (DH):</strong></h3>
+    <h2><strong>2. Calcula 4 intercambios Diffie-Hellman (DH):</strong></h2>
+    <ul>
     <p className="ds-markdown-paragraph"><br />Alice combina sus claves con las de Bob para derivar secretos compartidos:</p>
     <ul>
     <li>
-    <p className="ds-markdown-paragraph"><code>DH1 = DH(IK_A, SPK_B)</code><br /><em>(Identity Key de Alice + Signed PreKey de Bob)</em></p>
+    <p className="ds-markdown-paragraph"><strong><code>DH1 = DH(IK_A, SPK_B)</code></strong><br /><em>(Identity Key de Alice + Signed PreKey de Bob)</em></p>
     </li>
     <li>
-    <p className="ds-markdown-paragraph"><code>DH2 = DH(EK_A, IK_B)</code><br /><em>(Clave efímera de Alice + Identity Key de Bob)</em></p>
+    <p className="ds-markdown-paragraph"><strong><code>DH2 = DH(EK_A, IK_B)</code></strong><br /><em>(Clave efímera de Alice + Identity Key de Bob)</em></p>
     </li>
     <li>
-    <p className="ds-markdown-paragraph"><code>DH3 = DH(EK_A, SPK_B)</code><br /><em>(Clave efímera de Alice + Signed PreKey de Bob)</em></p>
+    <p className="ds-markdown-paragraph"><strong><code>DH3 = DH(EK_A, SPK_B)</code></strong><br /><em>(Clave efímera de Alice + Signed PreKey de Bob)</em></p>
     </li>
     <li>
-    <p className="ds-markdown-paragraph"><code>DH4 = DH(EK_A, OPK_B)</code>&nbsp;<em>(si OPK_B existe)</em></p>
+    <p className="ds-markdown-paragraph"><strong><code>DH4 = DH(EK_A, OPK_B)</code></strong>&nbsp;<em>(si OPK_B existe)</em></p>
     </li>
     </ul>
-    </li>
-    <li><h3><strong>Deriva la "clave raíz" (Root Key) y "cadena" (Chain Key):</strong></h3>
+    </ul>
+    <h2><strong>3. Deriva la "clave raíz" (Root Key) y "cadena" (Chain Key):</strong></h2>
     <ul>
     <li>
     <p className="ds-markdown-paragraph">Concatena los resultados (<code>DH1 || DH2 || DH3 || DH4</code>) y aplica un&nbsp;<strong>KDF</strong>&nbsp;(función de derivación de claves, como HKDF).</p>
@@ -207,8 +225,7 @@ export const Paso1Doc: React.FC = () => (
     </ul>
     </li>
     </ul>
-    </li>
-    </ol>
+    </ul>
   </div>
 );
 
