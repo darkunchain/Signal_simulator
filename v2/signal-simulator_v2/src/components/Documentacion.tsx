@@ -389,11 +389,10 @@ export const Paso3Doc: React.FC = () => (
       </li>
       </ol>
       <p>&nbsp;</p>
-      <h3><strong>Paso 2:&nbsp;</strong>Generación del <strong data-start="950" data-end="959">nonce</strong></h3>
+      <h3><strong>Paso 2:&nbsp;</strong>Generación del <strong data-start="950" data-end="959">IV</strong></h3>
       <ul data-start="961" data-end="1188">
-      <li data-start="961" data-end="1037">Algoritmo AEAD: <strong data-start="979" data-end="1001">XChaCha20-Poly1305</strong> &rarr; requiere <strong data-start="1013" data-end="1034">nonce de 24 bytes</strong>.</li>
-      <li data-start="1038" data-end="1110">WhatsApp genera 24 bytes aleatorios con CSPRNG (únicos por mensaje).</li>
-      <li data-start="1111" data-end="1188">El nonce <strong data-start="1122" data-end="1137">va en claro</strong> en el encabezado, pero está cubierto por Poly1305.</li>
+      <li data-start="961" data-end="1037">Algoritmo: <strong data-start="979" data-end="1001">AES-256-CBC</strong> &rarr; requiere <strong data-start="1013" data-end="1034">IV de 16 bytes</strong>.</li>
+      <li data-start="1038" data-end="1110">El IV se toma de los 16 bytes finales de la Message Key (MK) que sale de HKDF, por lo que no se envía un valor aleatorio aparte.</li>
       </ul>
       <p>&nbsp;</p>
       <h3><strong>Paso 3:&nbsp;</strong>Construcción del <strong data-start="1219" data-end="1240">encabezado Signal</strong></h3>
@@ -459,11 +458,11 @@ export const Paso3Doc: React.FC = () => (
       <div className="contain-inline-size rounded-2xl relative bg-token-sidebar-surface-primary">
       <div className="flex items-center text-token-text-secondary px-4 py-2 text-xs font-sans justify-between h-9 bg-token-sidebar-surface-primary select-none rounded-t-2xl">&nbsp;</div>
       <div className="sticky top-9">&nbsp;</div>
-      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">┌── <span className="hljs-selector-tag">header</span> ───────────────────────────────────────────────┐ </code></div>
-      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">│&nbsp; &nbsp; &nbsp; &nbsp;DH_pub_A (<span className="hljs-number">32</span>Bytes) │ pn │ n │ nonce (<span className="hljs-number">24</span>Bytes) │ &hellip; │ └─────────────────────────────────────────────────────────┘ </code></div>
+      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">┌── <span className="hljs-selector-tag">header</span> ─────────────────────────────────────────────────────────┐ </code></div>
+      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">│&nbsp;DH_pub_A (<span className="hljs-number">32</span>Bytes) │ pn (32Bytes) │ n (32Bytes) │ &hellip; AD (opcional) │ └───────────────────────────────────────────────────────────────────┘ </code></div>
       <div className="overflow-y-auto p-4" dir="ltr">&nbsp;</div>
       <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">┌── <span className="hljs-selector-tag">body</span> ──────────────────────────────────────────────┐</code></div>
-      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">│&nbsp; &nbsp; &nbsp; &nbsp;ciphertext │ tag (<span className="hljs-number">16</span>Bytes)&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;│ </code></div>
+      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">│&nbsp; &nbsp; ciphertext (AES-CBC, padded) │ tag (<span className="hljs-number">32</span>Bytes)&nbsp; &nbsp; &nbsp; │ </code></div>
       <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">└──────────────────────────────────────────────────────┘ </code></div>
       </div>
       <p data-start="2884" data-end="3022"><strong data-start="2884" data-end="2909">Total para "Hola Bob"</strong> (8 B) &rArr;<br data-start="2917" data-end="2920" /> <code data-start="2920" data-end="2984">32Bytes DH + 8Bytes nums + 24Bytes nonce + 8Bytes cipherText + 16Bytes tag &asymp; 88 bytes</code> (aprox.; pn/n codificados en varint).</p>

@@ -88,7 +88,7 @@ const initialKeys: Record<string, string> = {
 const steps: StepSpec[] = [
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-              /** Paso Inicial Llaves de registro al servidor */
+              /** Paso Inicial registro de Llaves publicas y privadas */
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   {
     description:
@@ -194,7 +194,7 @@ const steps: StepSpec[] = [
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   {
     description:
-      "📌 Fase 0: Alice desea enviar el primer mensaje.",
+      "📌 Fase 1: Alice desea enviar el primer mensaje.",
     documentation: <Paso1Doc />,
     makeNodes: () => [
       {
@@ -374,7 +374,7 @@ const steps: StepSpec[] = [
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   {
     description:
-      "✉️ Paso 2: Claves RootKey y ChainKey 🔑.",
+      "✉️ Doc: Claves RootKey y ChainKey 🔑.",
     documentation: <Paso2Doc />,
     makeNodes: () => [
       {
@@ -460,11 +460,11 @@ const steps: StepSpec[] = [
     },
   },
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-              /** Paso 3 Cifrado del mensaje */
+              /** Paso 3 Cifrado del mensaje y envio a Bob */
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   {
     description:
-      "✉️ Fase 1: Alice cifra el mensaje 🔒.",
+      "✉️ Fase 2: Alice cifra el mensaje 🔒y lo envia a Bob.",
     documentation: <Paso3Doc />,
     makeNodes: () => [
       {
@@ -480,28 +480,17 @@ const steps: StepSpec[] = [
                 <span style={{ color: "green" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
-                Identity key publica de Bob IK_B
+                Root Key (RK<sub>0</sub>)
                 <br></br>
                 <span style={{ color: "green" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
-                Signed PreKey publica de Bob SPK_B
+                Chain Key (CK<sub>0</sub>)
                 <br></br>
                 <span style={{ color: "green" }}>
                   <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
                 </span>
-                OneTime PreKey publica de Bob OPK_B
-                <br /><br />
-                <span style={{ color: "tomato" }}>
-                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                </span>
-                Identity key publica de Alice IK_A
-                <br></br>
-                <span style={{ color: "tomato" }}>
-                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                </span>
-                Llave Efimera de Alice EK_A
-                <br></br>
+                Mensaje en texto plano (Hola BoB)
             </ul>
           )
         },
@@ -516,6 +505,14 @@ const steps: StepSpec[] = [
           source: Position.Right,
           tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
+              <strong>Estructura del Mensaje (encriptado):</strong>
+              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">┌── <span className="hljs-selector-tag">header</span> ───────────────────────────────────────────────┐ </code></div>
+              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">│&nbsp; &nbsp; &nbsp; &nbsp;DH_pub_A (<span className="hljs-number">32</span>Bytes) │ pn │ n │ nonce (<span className="hljs-number">24</span>Bytes) │ &hellip; │ </code></div>
+              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">└─────────────────────────────────────────────────────────┘</code></div> 
+              <div className="overflow-y-auto p-4" dir="ltr">&nbsp;</div>
+              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">┌── <span className="hljs-selector-tag">body</span> ──────────────────────────────────────────────┐</code></div>
+              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">│&nbsp; &nbsp; &nbsp; &nbsp;ciphertext │ tag (<span className="hljs-number">16</span>Bytes)&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;│ </code></div>
+              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">└──────────────────────────────────────────────────────┘ </code></div>
             </ul>
           )
         },
@@ -528,15 +525,14 @@ const steps: StepSpec[] = [
           label: "Bob",
           tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
-                <span style={{ color: "violet" }}>
-                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                </span>
-                Identity key de Bob IK_B_priv
-                <br></br>
-                <span style={{ color: "violet" }}>
-                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                </span>
-                Signed PreKey de Bob SPK_B_priv
+              <strong>Estructura del Mensaje (encriptado):</strong>
+              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">┌── <span className="hljs-selector-tag">header</span> ───────────────────────────────────────────────┐ </code></div>
+              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">│&nbsp; &nbsp; &nbsp; &nbsp;DH_pub_A (<span className="hljs-number">32</span>Bytes) │ pn │ n │ nonce (<span className="hljs-number">24</span>Bytes) │ &hellip; │ </code></div>
+              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">└─────────────────────────────────────────────────────────┘</code></div> 
+              <div className="overflow-y-auto p-4" dir="ltr">&nbsp;</div>
+              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">┌── <span className="hljs-selector-tag">body</span> ──────────────────────────────────────────────┐</code></div>
+              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">│&nbsp; &nbsp; &nbsp; &nbsp;ciphertext │ tag (<span className="hljs-number">16</span>Bytes)&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;│ </code></div>
+              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">└──────────────────────────────────────────────────────┘ </code></div>
             </ul>
           )
         },
@@ -552,17 +548,12 @@ const steps: StepSpec[] = [
           width: 150,
           tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
-                Concatena los resultados <strong>(DH1 || DH2 || DH3 || DH4)</strong> y aplica un KDF <em>(función de derivación de claves, como HKDF).</em><br />
+                <h3><strong>Double Ratchet:</strong></h3>                
+                <strong>Ratchet Root:</strong>  DH = ECDH(IK<sub>Alice_priv</sub>, IK<sub>Bob_pub</sub>)
+                <br></br>Genera Nueva Root Key y nueva Chain Key (RK<sub>1</sub>, CK<sub>1</sub>)<br></br>                
                 <br></br>
-                <span style={{ color: "Tomato" }}>
-                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                </span>
-                <strong>Root Key:</strong> Clave maestra para la sesión.
-                <br></br>
-                <span style={{ color: "violet" }}>
-                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                </span>
-                <strong>Chain Key:</strong> Clave inicial para derivar Message Keys (usadas por mensaje)
+                <strong>Ratchet Chain:</strong> deriva el CK<sub>0</sub> para obtener MK<sub>0</sub>
+                <br></br>MK<sub>0</sub>[K<sub>enc</sub>, K<sub>mac</sub>(IV/nonce)]
             </ul>
           )
         },
@@ -643,11 +634,11 @@ const steps: StepSpec[] = [
     },
   },
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-              /** Paso 4 Alice quiere enviar el primer mensaje */
+              /** Paso 4 Bob descifra con MK₁ y avanza CKᵣ */
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   {
     description:
-      "🚚 Paso 2: El mensaje cifrado viaja — sobre se muestra con candado en tránsito.",
+      "🚚 Fase 4: Bob descifra con MK₁ y avanza CKᵣ",
     documentation: <Paso4Doc />,
     makeNodes: () => [
       {
