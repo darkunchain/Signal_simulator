@@ -413,45 +413,55 @@ export const Paso3Doc: React.FC = () => (
       <td style={{width: "198px", border: "1px solid #333"}} data-col-size="sm" data-start="1555" data-end="1582">Bob la usa para ratchet</td>
       </tr>
       <tr data-start="1583" data-end="1709">
-      <td style={{width: "132.766px", border: "1px solid #333"}} data-start="1583" data-end="1611" data-col-size="sm"><code data-start="1585" data-end="1589">pn</code> (previous chain len)</td>
-      <td style={{width: "257.234px", border: "1px solid #333"}} data-col-size="md" data-start="1611" data-end="1672">N&ordm; de mensajes que Alice cifró con la DH previa</td>
+      <td style={{width: "132.766px", border: "1px solid #333"}} data-start="1583" data-end="1611" data-col-size="sm"><code data-start="1585" data-end="1589">pn</code> (4Bytes)</td>
+      <td style={{width: "257.234px", border: "1px solid #333"}} data-col-size="md" data-start="1611" data-end="1672">cuántos mensajes envió Alice con el par DH anterior</td>
       <td style={{width: "198px", border: "1px solid #333"}} data-col-size="sm" data-start="1672" data-end="1709">Recuperación de mensajes perdidos</td>
       </tr>
       <tr data-start="1710" data-end="1817">
       <td style={{width: "132.766px", border: "1px solid #333"}} data-start="1710" data-end="1738" data-col-size="sm"><code data-start="1712" data-end="1715">n</code> (message number)</td>
       <td style={{width: "257.234px", border: "1px solid #333"}} data-col-size="md" data-start="1738" data-end="1799">Contador dentro de la cadena actual (<code data-start="1777" data-end="1782">CKₛ</code>)</td>
       <td style={{width: "198px", border: "1px solid #333"}} data-col-size="sm" data-start="1799" data-end="1817">Orden correcto</td>
-      </tr>
-      <tr data-start="1818" data-end="1930">
-      <td style={{width: "132.766px", border: "1px solid #333"}} data-start="1818" data-end="1846" data-col-size="sm"><code data-start="1820" data-end="1827">nonce</code></td>
-      <td style={{width: "257.234px", border: "1px solid #333"}} data-col-size="md" data-start="1846" data-end="1907">24Bytes generados arriba</td>
-      <td style={{width: "198px", border: "1px solid #333"}} data-col-size="sm" data-start="1907" data-end="1930">Necesario para AEAD</td>
-      </tr>
+      </tr>      
       <tr data-start="1931" data-end="2051">
       <td style={{width: "132.766px", border: "1px solid #333"}} data-start="1931" data-end="1959" data-col-size="sm"><em data-start="1933" data-end="1945">(opcional)</em> AD</td>
       <td style={{width: "257.234px", border: "1px solid #333"}} data-col-size="md" data-start="1959" data-end="2020">Cabecera tipo, marca de tiempo, &hellip;</td>
       <td style={{width: "198px", border: "1px solid #333"}} data-col-size="sm" data-start="2020" data-end="2051">Autenticado pero no cifrado</td>
       </tr>
+      <tr data-start="1818" data-end="1930">
+      <td style={{width: "132.766px", border: "1px solid #333"}} data-start="1818" data-end="1846" data-col-size="sm"><code data-start="1820" data-end="1827">ciphertext</code></td>
+      <td style={{width: "257.234px", border: "1px solid #333"}} data-col-size="md" data-start="1846" data-end="1907">Resultado de AES-256-CBC(K_enc, IV, plaintext); el IV (16 B) es la tercera porción de la Message-Key (MK) derivada por HKDF y no viaja en el mensaje.</td>
+      <td style={{width: "198px", border: "1px solid #333"}} data-col-size="sm" data-start="1907" data-end="1930">Texto Cifrado</td>
+      </tr>
+      <tr data-start="1818" data-end="1930">
+      <td style={{width: "132.766px", border: "1px solid #333"}} data-start="1818" data-end="1846" data-col-size="sm"><code data-start="1820" data-end="1827">tag (32Bytes)</code></td>
+      <td style={{width: "257.234px", border: "1px solid #333"}} data-col-size="md" data-start="1846" data-end="1907">HMAC-SHA-256(K_mac, header ∥ ciphertext); proporciona integridad y autenticidad.</td>
+      <td style={{width: "198px", border: "1px solid #333"}} data-col-size="sm" data-start="1907" data-end="1930">Necesario para verificación</td>
+      </tr>
       </tbody>
       </table>
       <div className="sticky end-(--thread-content-margin) h-0 self-end select-none">&nbsp;</div>
       </div>
-      </div>
-      <p>Todo el encabezado se usa como <strong data-start="2084" data-end="2108">Associated Data (AD)</strong> de Poly1305 &rarr; autenticado.</p>
-      <p data-start="2053" data-end="2135">&nbsp;</p>
+      </div>      
       <h3><strong>Paso 4:&nbsp;</strong>Cifrado del cuerpo</h3>
       <div className="contain-inline-size rounded-2xl relative bg-token-sidebar-surface-primary">
       <div className="flex items-center text-token-text-secondary px-4 py-2 text-xs font-sans justify-between h-9 bg-token-sidebar-surface-primary select-none rounded-t-2xl">&nbsp;</div>
-      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">ciphertext, tag = XChaCha20-Poly1305( </code></div>
-      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">&nbsp; &nbsp;key = MKₙ, # 32Bytes </code></div>
-      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">&nbsp; &nbsp;nonce = nonce, # 24Bytes</code></div>
-      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">&nbsp; &nbsp;plaintext = "Hola Bob", # variable</code></div>
-      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">&nbsp; &nbsp;ad = headerBytes # encabezado completo</code></div>
+      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!"># 1. Cifrar el cuerpo </code></div>
+      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">ciphertext = AES_256_CBC_encrypt( </code></div>
+      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">&nbsp; &nbsp;key = K_enc, #32Bytes (primera parte de MKₙ)</code></div>
+      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">&nbsp; &nbsp;iv = IV, #16Bytes (tercera parte de MKₙ; NO se envía)</code></div>
+      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">&nbsp; &nbsp;plaintext = "Hola Bob", #variable</code></div>
+      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">)</code></div>
+      <br />
+      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!"># 2. Generar el tag de integridad/autenticidad </code></div>
+      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">tag = HMAC_SHA256( </code></div>
+      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">&nbsp; &nbsp;key = K_mac, #32Bytes (segunda parte de MKₙ)</code></div>
+      <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">&nbsp; &nbsp;data = headerBytes + ciphertext, #header completo || cuerpo cifrado</code></div>
       <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">)</code></div>
       </div>
       <ul data-start="2389" data-end="2515">
-      <li data-start="2389" data-end="2481"><strong data-start="2391" data-end="2405">Ciphertext</strong> = mismo tama&ntilde;o que el mensaje (8Bytes aquí, tras padding interno de stream).</li>
-      <li data-start="2482" data-end="2515"><strong data-start="2484" data-end="2491">Tag</strong> = 16Bytes Poly1305.</li>
+      <li data-start="2389" data-end="2481"><strong data-start="2391" data-end="2405">Ciphertext: </strong> se ajusta al múltiplo de bloque AES (16 B) mediante PKCS#7.</li>
+      <li data-start="2389" data-end="2481">Para un texto de 8Bytes («Hola Bob»), el resultante cifrado ocupa 16Bytes.</li>
+      <li data-start="2482" data-end="2515"><strong data-start="2484" data-end="2491">Tag:</strong> es siempre 32Bytes porque HMAC-SHA-256 produce 256 bits.</li>
       </ul>
       <hr data-start="2517" data-end="2520" />
       <h3><strong>Paso 5:&nbsp;</strong>Paquete final enviado</h3>
@@ -465,7 +475,7 @@ export const Paso3Doc: React.FC = () => (
       <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">│&nbsp; &nbsp; ciphertext (AES-CBC, padded) │ tag (<span className="hljs-number">32</span>Bytes)&nbsp; &nbsp; &nbsp; │ </code></div>
       <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">└──────────────────────────────────────────────────────┘ </code></div>
       </div>
-      <p data-start="2884" data-end="3022"><strong data-start="2884" data-end="2909">Total para "Hola Bob"</strong> (8 B) &rArr;<br data-start="2917" data-end="2920" /> <code data-start="2920" data-end="2984">32Bytes DH + 8Bytes nums + 24Bytes nonce + 8Bytes cipherText + 16Bytes tag &asymp; 88 bytes</code> (aprox.; pn/n codificados en varint).</p>
+      <p data-start="2884" data-end="3022"><strong data-start="2884" data-end="2909">Total para "Hola Bob"</strong> (8 B) &rArr;<br data-start="2917" data-end="2920" /> <code data-start="2920" data-end="2984">32Bytes DH + 8Bytes pn/n + 16Bytes cipherText + 32Bytes tag &asymp; 88 Bytes</code> (aprox.; pn/n codificados en varint "entero de longitud variable").</p>
       </ul>
     </div>
 );

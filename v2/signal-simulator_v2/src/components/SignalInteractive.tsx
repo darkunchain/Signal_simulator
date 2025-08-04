@@ -506,12 +506,12 @@ const steps: StepSpec[] = [
           tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
               <strong>Estructura del Mensaje (encriptado):</strong>
-              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">┌── <span className="hljs-selector-tag">header</span> ───────────────────────────────────────────────┐ </code></div>
-              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">│&nbsp; &nbsp; &nbsp; &nbsp;DH_pub_A (<span className="hljs-number">32</span>Bytes) │ pn │ n │ nonce (<span className="hljs-number">24</span>Bytes) │ &hellip; │ </code></div>
-              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">└─────────────────────────────────────────────────────────┘</code></div> 
+              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">┌── <span className="hljs-selector-tag">header</span> ─────────────────────────────────────────────────────────┐ </code></div>
+              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">│&nbsp;DH_pub_A (<span className="hljs-number">32</span>Bytes) │ pn (32Bytes) │ n (32Bytes) │ &hellip; AD (opcional) │ </code></div>
+              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">└───────────────────────────────────────────────────────────────────┘</code></div> 
               <div className="overflow-y-auto p-4" dir="ltr">&nbsp;</div>
               <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">┌── <span className="hljs-selector-tag">body</span> ──────────────────────────────────────────────┐</code></div>
-              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">│&nbsp; &nbsp; &nbsp; &nbsp;ciphertext │ tag (<span className="hljs-number">16</span>Bytes)&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;│ </code></div>
+              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">│&nbsp; &nbsp; ciphertext (AES-CBC, padded) │ tag (<span className="hljs-number">32</span>Bytes)&nbsp; &nbsp; &nbsp; │ </code></div>
               <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">└──────────────────────────────────────────────────────┘ </code></div>
             </ul>
           )
@@ -526,12 +526,12 @@ const steps: StepSpec[] = [
           tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
               <strong>Estructura del Mensaje (encriptado):</strong>
-              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">┌── <span className="hljs-selector-tag">header</span> ───────────────────────────────────────────────┐ </code></div>
-              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">│&nbsp; &nbsp; &nbsp; &nbsp;DH_pub_A (<span className="hljs-number">32</span>Bytes) │ pn │ n │ nonce (<span className="hljs-number">24</span>Bytes) │ &hellip; │ </code></div>
-              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">└─────────────────────────────────────────────────────────┘</code></div> 
+              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">┌── <span className="hljs-selector-tag">header</span> ─────────────────────────────────────────────────────────┐ </code></div>
+              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">│&nbsp;DH_pub_A (<span className="hljs-number">32</span>Bytes) │ pn (32Bytes) │ n (32Bytes) │ &hellip; AD (opcional) │ </code></div>
+              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">└───────────────────────────────────────────────────────────────────┘</code></div> 
               <div className="overflow-y-auto p-4" dir="ltr">&nbsp;</div>
               <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">┌── <span className="hljs-selector-tag">body</span> ──────────────────────────────────────────────┐</code></div>
-              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">│&nbsp; &nbsp; &nbsp; &nbsp;ciphertext │ tag (<span className="hljs-number">16</span>Bytes)&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;│ </code></div>
+              <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">│&nbsp; &nbsp; ciphertext (AES-CBC, padded) │ tag (<span className="hljs-number">32</span>Bytes)&nbsp; &nbsp; &nbsp; │ </code></div>
               <div className="overflow-y-auto p-4" dir="ltr"><code className="whitespace-pre!">└──────────────────────────────────────────────────────┘ </code></div>
             </ul>
           )
