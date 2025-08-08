@@ -1,6 +1,6 @@
 export const Paso3Doc: React.FC = () => (
 <div>
-<h1>&iquest;Qué recibe Bob?</h1>
+<h1>¿Qué recibe Bob?</h1>
 <p data-start="139" data-end="172">Un paquete (vía <strong data-start="155" data-end="166">TLS 1.3</strong>) con:</p>
 <ul data-start="173" data-end="341">
 <li data-start="173" data-end="210">
@@ -16,7 +16,7 @@ export const Paso3Doc: React.FC = () => (
 <p data-start="250" data-end="341">(solo si es <strong data-start="262" data-end="281">pre-key message</strong> del primer contacto): <code data-start="304" data-end="341">IK_A_pub, EK_A_pub, id_SPK, id_OPK?</code></p>
 </li>
 </ul>
-<p><code data-start="304" data-end="341">HR%%%%</code></p>
+<hr />
 <h1><strong data-start="362" data-end="380">Primer mensaje</strong> (pre-key message, aún no hay sesión)</h1>
 <ol data-start="419" data-end="704">
 <li data-start="419" data-end="619">
