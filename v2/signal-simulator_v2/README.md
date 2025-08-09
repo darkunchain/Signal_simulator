@@ -1,4 +1,10 @@
-# Getting Started with Create React App
+# Requerimientos
+
+se requiere node 20 o superior, npm 11 o superior. inicialmente se ejcuta npm -install para instalar todos los paquetes necesarios.
+
+## npm install
+
+## Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
