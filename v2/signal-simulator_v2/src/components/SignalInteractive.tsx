@@ -638,62 +638,9 @@ const steps: StepSpec[] = [
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   {
     description:
-      "🚚 Fase 4: Bob descifra con MK₁ y avanza CKᵣ",
+      "🚚 Fase 3: Bob descifra el mensaje",
     documentation: <Paso4Doc />,
     makeNodes: () => [
-      {
-        id: "alice",
-        position: { x: 0, y: 150 },
-        type: "alice",
-        data: {
-          label: "Alice",
-          target: Position.Top,
-          source: Position.Top,
-          tooltipContent: (
-            <ul style={{ paddingLeft: 10, margin: 0 }}>
-                <span style={{ color: "green" }}>
-                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                </span>
-                Identity key publica de Bob IK_B
-                <br></br>
-                <span style={{ color: "green" }}>
-                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                </span>
-                Signed PreKey publica de Bob SPK_B
-                <br></br>
-                <span style={{ color: "green" }}>
-                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                </span>
-                OneTime PreKey publica de Bob OPK_B
-                <br /><br />
-                <span style={{ color: "tomato" }}>
-                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                </span>
-                Identity key publica de Alice IK_A
-                <br></br>
-                <span style={{ color: "tomato" }}>
-                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                </span>
-                Llave Efimera de Alice EK_A
-                <br></br>
-            </ul>
-          )
-        },
-      },
-      {
-        id: "server",
-        position: { x: 210, y: 0 },
-        type: "server",
-        data: {
-          label: "WhatsApp Server",
-          target: Position.Left,
-          source: Position.Right,
-          tooltipContent: (
-            <ul style={{ paddingLeft: 10, margin: 0 }}>
-            </ul>
-          )
-        },
-      },
       {
         id: "bob",
         position: { x: 420, y: 150 },
@@ -717,7 +664,7 @@ const steps: StepSpec[] = [
       },
       {
         id: "HKDF",
-        position: { x: -250, y: 150 },
+        position: { x: 20, y: 150 },
         type: "HKDF",
         data: {
           label: "",
@@ -742,16 +689,27 @@ const steps: StepSpec[] = [
         },
       },
       {
-        id: "vacio",
-        position: { x: -290, y: 140 },
-        type: "vacio",
+        id: "X3DH",
+        position: { x: 220, y: 150 },
+        type: "X3DH",
         data: {
           label: "",
           target: Position.Right,
-          source: Position.Right,
-          width: 20,
+          source: Position.Top,
+          width: 150,
           tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
+                Concatena los resultados <strong>(DH1 || DH2 || DH3 || DH4)</strong> y aplica un KDF <em>(función de derivación de claves, como HKDF).</em><br />
+                <br></br>
+                <span style={{ color: "Tomato" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                <strong>Root Key:</strong> Clave maestra para la sesión.
+                <br></br>
+                <span style={{ color: "violet" }}>
+                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
+                </span>
+                <strong>Chain Key:</strong> Clave inicial para derivar Message Keys (usadas por mensaje)
             </ul>
           )
         },
@@ -767,34 +725,6 @@ const steps: StepSpec[] = [
       },
     ],
     makeKeys: (prev) => prev,
-  },
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-              /** Paso 5 Alice quiere enviar el primer mensaje */
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  {
-    description:
-      "📬 Paso 3: Bob descifra con MK₁ y avanza CKᵣ — el sobre abierto llega a Bob.",
-    documentation: <Paso5Doc />,
-    makeNodes: (prev) =>
-      prev.map((n) =>
-        n.id === "env1"
-          ? {
-              ...n,
-              position: { x: 420, y: 50 },
-              data: { label: <MailOpenIcon /> },
-            }
-          : n
-      ),
-      makeEdges: () => [
-      {
-        id: "a-to-b-3",
-        source: "env1",
-        target: "env1",
-        type: "animatedKey",
-        data: { dur: '1.2s', repeatCount:3, scale:0.3}
-      },
-    ],
-    makeKeys: (prev) => ({ ...prev, CKr1: hkdf(prev.CKr0, "CKr1") }),
   },
 ];
 
