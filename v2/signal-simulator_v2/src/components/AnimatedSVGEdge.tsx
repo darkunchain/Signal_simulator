@@ -400,3 +400,83 @@ export function BaulEdge({
         </>
     );
 }
+
+
+
+
+export function HolaBobEdge({
+    id,
+    sourceX,
+    sourceY,
+    targetX,
+    targetY,
+    sourcePosition,
+    targetPosition,
+    data
+}: EdgeProps) {
+    const [edgePath] = getBezierPath({
+        sourceX,
+        sourceY,
+        sourcePosition,
+        targetX,
+        targetY,
+        targetPosition,
+    });
+
+    const dur = data?.dur || "2s";
+    const repeatCount = data?.repeatCount || "indefinite";
+    const scaleEdge = data?.scale || 1;
+    const fill = data?.fill || "#ffca28";
+    const delay = data?.delay || 0;
+    const [visible, setVisible] = useState(true);
+    const keyPoints = data?.keyPoints || "0;1"; // default: toda la trayectoria
+    const keyTimes = data?.keyTimes || "0;1";
+    const vis = data?.vis || 0
+
+    useEffect(() => {
+        if (repeatCount !== "indefinite") {
+        const total = vis * 1000;
+        
+        const timeout = setTimeout(() => setVisible(false), total);
+        
+        return () => clearTimeout(timeout);
+        }
+    }, [dur, repeatCount]);
+
+
+    return (
+        <>
+             {/* Dibuja la línea base */}
+            <BaseEdge id={id} path={edgePath} />
+            {/* SVG overlay para animar el sobre */}
+            {visible && (
+            <svg style={{ overflow: "visible", pointerEvents: "none", position: "absolute" }} width="12" height="12">
+                <g transform={`scale(${scaleEdge})`}>
+                <animateMotion dur={dur} repeatCount={repeatCount} path={edgePath} begin={`${delay}s`} keyPoints={keyPoints} keyTimes={keyTimes}/>
+                {/* El ícono del sobre como <g> */}                
+                <g
+                    id="layer1"
+                    transform="translate(-255.16042,-144.99167)">
+                    <path
+                    id="path57-8"
+                    style={{fill:"#338219",fillOpacity:1,stroke:"none",strokeWidth:0.1,strokeOpacity:1}}
+                    d="m 252.32627,148.57954 c 0.13263,1.04592 0.19831,1.2056 1.08927,1.44373 -0.80099,0.14332 -1.41494,0.069 -1.9192,-0.30258 0.34135,-0.28332 0.66976,-0.58606 0.82993,-1.14115 z m -24.52505,-3.58787 h 22.10455 c 1.463,0 2.6408,1.1778 2.6408,2.64081 0,1.46301 -1.1778,2.64081 -2.6408,2.64081 h -22.10455 c -1.463,0 -2.6408,-1.1778 -2.6408,-2.64081 0,-1.46301 1.1778,-2.64081 2.6408,-2.64081 z"
+                    />
+                    <text
+                    
+                    style={{fontSize:"4.05712px",fontFamily:"Calibri",textAlign:"start",direction:"ltr",textAnchor:"start",fill:"#ffffff",fillOpacity:1,stroke:"#ffffff",strokeWidth:0.127784,strokeOpacity:1}}
+                    x="256.7406"
+                    y="134.92776"
+                    id="text202-1"
+                    transform="scale(0.90512342,1.1048217)"><tspan         
+                        style={{fill:"#ffffff",fillOpacity:1,stroke:"#ffffff",strokeWidth:0.127784,strokeOpacity:1}}
+                        x="256.7406"
+                        y="134.92776"
+                        id="tspan205-7">Hola Bob </tspan></text>
+                </g>
+                </g>
+            </svg>
+            )}
+        </>
+    );
+}

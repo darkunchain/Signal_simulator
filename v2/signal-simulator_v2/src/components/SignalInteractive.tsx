@@ -3,7 +3,7 @@ import ReactFlow, {Background, Controls, Edge, Node, Position} from "reactflow";
 import {KeyRound as KeyIcon, Mail as MailIcon, Lock as LockIcon, MailOpen as MailOpenIcon,} from "lucide-react";
 import "reactflow/dist/style.css";
 import { AliceNode, BobNode, ServerNode, HKDFNode, ECDHNode, X3DHNode, vacioNode } from './CustomNodes';
-import { KeyEdge, MessageEdge, Key3Edge, BaulEdge } from './AnimatedSVGEdge';
+import { KeyEdge, MessageEdge, Key3Edge, BaulEdge, HolaBobEdge } from './AnimatedSVGEdge';
 import { PasoInDoc, Paso1Doc, Paso2Doc, Paso3Doc, Paso4Doc,Paso5Doc} from './Documentacion';
 import '../index.css';
 import nacl from 'tweetnacl';                   // npm i tweetnacl
@@ -26,7 +26,8 @@ const edgeTypes = {
   animatedKey: KeyEdge,
   animatedMessage: MessageEdge,
   animatedKey3: Key3Edge,
-  animatedBaul: BaulEdge
+  animatedBaul: BaulEdge,
+  animatedBob: HolaBobEdge
 };
 
 
@@ -71,11 +72,20 @@ interface StepSpec {
   makeKeys: (prev: Record<string, string>) => Record<string, string>;
 }
 
+/** Generar clave en formato PEM */
+const randomPEMKey = (type: "PRIVATE" | "PUBLIC") => {
+  const bytes = crypto.getRandomValues(new Uint8Array(20)); // 256 bytes = 2048 bits aprox
+  const base64 = btoa(String.fromCharCode.apply(null, Array.from(bytes)));
+  return `\n-----BEGIN ${type} KEY-----\n${base64}\n-----END ${type} KEY-----`;
+};
+  
+
+
 const initialKeys: Record<string, string> = {
-  IK_A_priv: randomHex(32),
-  IK_A_pub: randomHex(32),
-  IK_B_priv: randomHex(32),
-  IK_B_pub: randomHex(32),
+  IK_A_priv: randomPEMKey("PRIVATE"),  
+  IK_A_pub: randomPEMKey("PUBLIC"),
+  IK_B_priv: randomPEMKey("PRIVATE"),
+  IK_B_pub: randomPEMKey("PUBLIC"),
   SPK_A_priv: randomHex(32),
   SPK_A_pub: randomHex(32),
   SPK_B_priv: randomHex(32),
@@ -97,7 +107,7 @@ const steps: StepSpec[] = [
     makeNodes: () => [
       {
         id: "alice",
-        position: { x: 0, y: 150 },
+        position: { x: 0, y: 250 },
         type: "alice",
         data: {
           label: "Alice",
@@ -118,7 +128,7 @@ const steps: StepSpec[] = [
       },
       {
         id: "bob",
-        position: { x: 420, y: 150 },
+        position: { x: 420, y: 250 },
         type: "bob",
         data: {
           label: "Bob",
@@ -139,7 +149,7 @@ const steps: StepSpec[] = [
       },
       {
         id: "server",
-        position: { x: 210, y: 0 },
+        position: { x: 210, y: 100 },
         type: "server",
         data: {
           label: "WhatsApp Server",
@@ -199,7 +209,7 @@ const steps: StepSpec[] = [
     makeNodes: () => [
       {
         id: "alice",
-        position: { x: 0, y: 150 },
+        position: { x: 0, y: 250 },
         type: "alice",
         data: {
           label: "Alice",
@@ -236,7 +246,7 @@ const steps: StepSpec[] = [
       },
       {
         id: "X3DH",
-        position: { x: 150, y: 150 },
+        position: { x: 150, y: 250 },
         type: "X3DH",
         data: {
           label: "",
@@ -263,7 +273,7 @@ const steps: StepSpec[] = [
       },
       {
         id: "server",
-        position: { x: 210, y: 0 },
+        position: { x: 210, y: 100 },
         type: "server",
         data: {
           label: "WhatsApp Server",
@@ -277,7 +287,7 @@ const steps: StepSpec[] = [
       },
       {
         id: "HKDF",
-        position: { x: 350, y: 150 },
+        position: { x: 350, y: 250 },
         type: "HKDF",
         data: {
           label: "",
@@ -303,7 +313,7 @@ const steps: StepSpec[] = [
       },
       {
         id: "vacio",
-        position: { x: 510, y: 170 },
+        position: { x: 510, y: 270 },
         type: "vacio",
         data: {
           label: "",
@@ -360,15 +370,17 @@ const steps: StepSpec[] = [
         type: "animatedKey",
         data: { dur: '4s', repeatCount:1, scale:0.5, fill: "#a19c12",delay: 9.5, vis:13.5}
       },
-
     ],
-    makeKeys: (prev) => ({
-      ...prev,
-      RK0: hkdf(prev.IK_A_priv + prev.SPK_B_pub + prev.IK_B_pub, "RK0"),
-      CKs0: hkdf(prev.IK_A_priv, "CKs0"),
-      CKr0: hkdf(prev.IK_B_pub, "CKr0"),
-    }),
+    makeKeys: (prev) => {      
+      return {
+      ...prev,      
+      RK0: hkdfSyncDemo(prev.IK_A_priv + prev.SPK_B_pub + prev.IK_B_pub, "RK0"),
+      CKs0: hkdfSyncDemo(prev.IK_A_priv, "CKs0"),
+      CKr0: hkdfSyncDemo(prev.IK_B_pub, "CKr0"),
+    };
   },
+},
+
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
               /** Paso 2 Llaves Root Key y Chain Key */
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -379,7 +391,7 @@ const steps: StepSpec[] = [
     makeNodes: () => [
       {
         id: "alice",
-        position: { x: 0, y: 150 },
+        position: { x: 0, y: 250 },
         type: "alice",
         data: {
           label: "Alice",
@@ -402,7 +414,7 @@ const steps: StepSpec[] = [
       },
       {
         id: "server",
-        position: { x: 210, y: 0 },
+        position: { x: 210, y: 100 },
         type: "server",
         data: {
           label: "WhatsApp Server",
@@ -414,7 +426,7 @@ const steps: StepSpec[] = [
       },
       {
         id: "bob",
-        position: { x: 420, y: 150 },
+        position: { x: 420, y: 250 },
         type: "bob",
         data: {
           label: "Bob",
@@ -426,7 +438,7 @@ const steps: StepSpec[] = [
       },
       {
         id: "vacio",
-        position: { x: 40, y: 170 },
+        position: { x: 40, y: 270 },
         type: "vacio",
         data: {
           label: "",
@@ -469,7 +481,7 @@ const steps: StepSpec[] = [
     makeNodes: () => [
       {
         id: "alice",
-        position: { x: 0, y: 150 },
+        position: { x: 0, y: 250 },
         type: "alice",
         data: {
           label: "Alice",
@@ -497,7 +509,7 @@ const steps: StepSpec[] = [
       },
       {
         id: "server",
-        position: { x: 210, y: 0 },
+        position: { x: 210, y: 100 },
         type: "server",
         data: {
           label: "WhatsApp Server",
@@ -519,7 +531,7 @@ const steps: StepSpec[] = [
       },
       {
         id: "bob",
-        position: { x: 420, y: 150 },
+        position: { x: 420, y: 250 },
         type: "bob",
         data: {
           label: "Bob",
@@ -539,12 +551,12 @@ const steps: StepSpec[] = [
       },
       {
         id: "HKDF",
-        position: { x: -250, y: 150 },
+        position: { x: -250, y: 250 },
         type: "HKDF",
         data: {
           label: "",
           target: Position.Right,
-          source: Position.Top,
+          source: Position.Right,
           width: 150,
           tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
@@ -560,7 +572,7 @@ const steps: StepSpec[] = [
       },
       {
         id: "vacio",
-        position: { x: -290, y: 140 },
+        position: { x: -20, y: 280 },
         type: "vacio",
         data: {
           label: "",
@@ -643,7 +655,7 @@ const steps: StepSpec[] = [
     makeNodes: () => [
       {
         id: "bob",
-        position: { x: 420, y: 150 },
+        position: { x: 420, y: 250 },
         type: "bob",
         data: {
           label: "Bob",
@@ -664,12 +676,12 @@ const steps: StepSpec[] = [
       },
       {
         id: "HKDF",
-        position: { x: 20, y: 150 },
+        position: { x: -20, y: 250 },
         type: "HKDF",
         data: {
           label: "",
           target: Position.Right,
-          source: Position.Top,
+          source: Position.Left,
           width: 150,
           tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
@@ -690,12 +702,12 @@ const steps: StepSpec[] = [
       },
       {
         id: "X3DH",
-        position: { x: 220, y: 150 },
+        position: { x: 220, y: 250 },
         type: "X3DH",
         data: {
           label: "",
           target: Position.Right,
-          source: Position.Top,
+          source: Position.Left,
           width: 150,
           tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
@@ -714,15 +726,58 @@ const steps: StepSpec[] = [
           )
         },
       },
+      {
+        id: "vacio",
+        position: { x: -60, y: 270 },
+        type: "vacio",
+        data: {
+          label: "",
+          target: Position.Right,
+          source: Position.Right,
+          width: 20,
+          tooltipContent: (
+            <ul style={{ paddingLeft: 10, margin: 0 }}>
+            </ul>
+          )
+        },
+      },
     ],
       makeEdges: () => [
       {
-        id: "a-to-b-2",
-        source: "env1",
-        target: "env1",
-        type: "animatedKey",
-        data: { dur: '1.2s', repeatCount:3, scale:0.3}
+        id: "b-to-X3DH",
+        source: "bob",
+        target: "X3DH",
+        type: "animatedBaul",
+        data: { dur: '2s', repeatCount:1, scale:0.2, fill: "#560e75", vis:2}
       },
+      {
+        id: "X3DH-to-HKDF",
+        source: "X3DH",
+        target: "HKDF",
+        type: "animatedMessage",
+        data: { dur: '2s', repeatCount:1, scale:1.5, fill: "#560e75",delay: 2, vis:4}
+      },
+      {
+        id: "X3DH-to-HKDF1",
+        source: "X3DH",
+        target: "HKDF",
+        type: "animatedKey",
+        data: { dur: '2s', repeatCount:1, scale:0.6, fill: "#560e75",delay: 2, vis:4}
+      },
+      {
+        id: "HKDF-to-vacio",
+        source: "HKDF",
+        target: "vacio",
+        type: "animatedMessage",
+        data: { dur: '3s', repeatCount:1, scale:1.8, fill: "#9334eb",delay: 4, vis:7}
+      },
+      {
+        id: "HKDF-to-vacio",
+        source: "HKDF",
+        target: "vacio",
+        type: "animatedBob",
+        data: { dur: '3s', repeatCount:1, scale:5, fill: "#9334eb",delay: 7, vis:20}
+      }      
     ],
     makeKeys: (prev) => prev,
   },
@@ -769,8 +824,12 @@ export default function SignalInteractive() {
       Object.entries(keys).map(([k, v]) => (
         <div key={k} className="flex gap-1 items-start text-xs break-all">
           <KeyIcon className="w-3 h-3 mt-0.5" />
-          <span className="font-medium"><strong> {k}: </strong></span>
-          <code>{v}</code>
+          <span className="font-medium"><strong> {k}: </strong></span>          
+          <code
+            dangerouslySetInnerHTML={{
+              __html: v.replace(/\n/g, "<br/>"),
+            }}
+          />
         </div>
       )),
     [keys]
@@ -812,7 +871,7 @@ export default function SignalInteractive() {
             <h2 className="mb-4 font-medium leading-relaxed whitespace-pre-wrap">
               {steps[stepIdx].description}
             </h2>
-            <p className="space-y-1 list-none pb-12">{keyList}</p>
+            <p className="space-y-1 list-none pb-12">{keyList}</p>          
 
                     <div
                       style={{
