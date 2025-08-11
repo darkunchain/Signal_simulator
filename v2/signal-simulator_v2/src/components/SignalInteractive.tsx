@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from "react";
 import ReactFlow, {Background, Controls, Edge, Node, Position} from "reactflow";
-import {KeyRound as KeyIcon, Mail as MailIcon, Lock as LockIcon, MailOpen as MailOpenIcon,} from "lucide-react";
+import {KeyRound as KeyIcon} from "lucide-react";
 import "reactflow/dist/style.css";
 import { AliceNode, BobNode, ServerNode, HKDFNode, ECDHNode, X3DHNode, vacioNode } from './CustomNodes';
 import { KeyEdge, MessageEdge, Key3Edge, BaulEdge } from './AnimatedSVGEdge';
-import { PasoInDoc, Paso1Doc, Paso2Doc, Paso3Doc, Paso4Doc,Paso5Doc} from './Documentacion';
+import { PasoInDoc, Paso1Doc, Paso2Doc, Paso3Doc, Paso4Doc} from './Documentacion';
 import '../index.css';
 import nacl from 'tweetnacl';                   // npm i tweetnacl
 import { encodeBase64 } from 'tweetnacl-util';  // npm i tweetnacl-util
@@ -548,9 +548,9 @@ const steps: StepSpec[] = [
           width: 150,
           tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
-                <h3><strong>Double Ratchet:</strong></h3>                
+                <h3><strong>Double Ratchet:</strong></h3>
                 <strong>Ratchet Root:</strong>  DH = ECDH(IK<sub>Alice_priv</sub>, IK<sub>Bob_pub</sub>)
-                <br></br>Genera Nueva Root Key y nueva Chain Key (RK<sub>1</sub>, CK<sub>1</sub>)<br></br>                
+                <br></br>Genera Nueva Root Key y nueva Chain Key (RK<sub>1</sub>, CK<sub>1</sub>)<br></br>
                 <br></br>
                 <strong>Ratchet Chain:</strong> deriva el CK<sub>0</sub> para obtener MK<sub>0</sub>
                 <br></br>MK<sub>0</sub>[K<sub>enc</sub>, K<sub>mac</sub>(IV/nonce)]
@@ -613,9 +613,7 @@ const steps: StepSpec[] = [
     ],
     makeKeys: (prev) => {
       const MK1 = hkdfSyncDemo(prev.CKs0, "MK1"); // string hex de 64 chars
-      const mk1Bytes = hexToBytes(MK1); // Uint8Array de 32 bytes
       const CKs1 = hkdfSyncDemo(prev.CKs0, "CKs1");
-      const CKs1Bytes = hexToBytes(CKs1);
       const mk1Uint8 = hexToBytes(MK1);    // ← Uint8Array de 32 bytes
       console.log("Longitud de la clave:", mk1Uint8.length);
       const nonce = nacl.randomBytes(nacl.secretbox.nonceLength);
@@ -699,17 +697,17 @@ const steps: StepSpec[] = [
           width: 150,
           tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
-                Concatena los resultados <strong>(DH1 || DH2 || DH3 || DH4)</strong> y aplica un KDF <em>(función de derivación de claves, como HKDF).</em><br />
+                <strong>DH1 = DH(IK_A, SPK_B)</strong><br />
+                <em>(Identity Key de Alice + Signed PreKey de Bob)</em>
                 <br></br>
-                <span style={{ color: "Tomato" }}>
-                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                </span>
-                <strong>Root Key:</strong> Clave maestra para la sesión.
+                <strong>DH2 = DH(EK_A, IK_B)</strong><br />
+                <em>(Clave efímera de Alice + Identity Key de Bob)</em>
                 <br></br>
-                <span style={{ color: "violet" }}>
-                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                </span>
-                <strong>Chain Key:</strong> Clave inicial para derivar Message Keys (usadas por mensaje)
+                <strong>DH3 = DH(EK_A, SPK_B)</strong><br />
+                <em>(Clave efímera de Alice + Signed PreKey de Bob)</em>
+                <br></br>
+                <strong>DH4 = DH(EK_A, OPK_B)</strong><br />
+                <em>(si OPK_B existe)</em>
             </ul>
           )
         },
