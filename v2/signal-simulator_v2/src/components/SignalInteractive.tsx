@@ -3,7 +3,7 @@ import ReactFlow, {Background, Controls, Edge, Node, Position} from "reactflow";
 import {KeyRound as KeyIcon} from "lucide-react";
 import "reactflow/dist/style.css";
 import { AliceNode, BobNode, ServerNode, HKDFNode, ECDHNode, X3DHNode, vacioNode } from './CustomNodes';
-import { KeyEdge, MessageEdge, Key3Edge, BaulEdge } from './AnimatedSVGEdge';
+import { KeyEdge, MessageEdge, Key3Edge, BaulEdge, HolaBobEdge } from './AnimatedSVGEdge';
 import { PasoInDoc, Paso1Doc, Paso2Doc, Paso3Doc, Paso4Doc} from './Documentacion';
 import '../index.css';
 import nacl from 'tweetnacl';                   // npm i tweetnacl
