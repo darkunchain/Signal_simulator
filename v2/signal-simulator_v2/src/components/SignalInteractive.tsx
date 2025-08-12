@@ -709,16 +709,17 @@ const steps: StepSpec[] = [
           width: 150,
           tooltipContent: (
             <ul style={{ paddingLeft: 10, margin: 0 }}>
-                <strong>DH1 = DH(IK_A, SPK_B)</strong><br />
-                <em>(Identity Key de Alice + Signed PreKey de Bob)</em>
+                <strong>DH1 = DH(SPK_B, IK_A)</strong><br />
+                <em>(Signed PreKey de Bob + Identity Key de Alice)</em>
                 <br></br>
-                <strong>DH2 = DH(EK_A, IK_B)</strong><br />
-                <em>(Clave efímera de Alice + Identity Key de Bob)</em>
+                <strong>DH2 = DH(IK_B, EK_A)</strong><br />
+                <em>(Identity Key de Bob + Clave efímera de Alice)</em>
                 <br></br>
-                <span style={{ color: "violet" }}>
-                  <KeyIcon size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                </span>
-                <strong>Chain Key:</strong> Clave inicial para derivar Message Keys (usadas por mensaje)
+                <strong>DH3 = DH(SPK_B, EK_A)</strong><br />
+                <em>(Signed PreKey de Bob + Clave efímera de Alice)</em>
+                <br></br>
+                <strong>DH4 = DH(OPK_B, EK_A)</strong><br />
+                <em>(si OPK_B existe)</em>
             </ul>
           )
         },
